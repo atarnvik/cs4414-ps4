@@ -82,8 +82,9 @@ pub unsafe fn parsekey(x: char) {
 	}
 	_		=>	{ 
 	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH {
-		putchar(x as char);
-		drawchar(x as char);
+    		putchar(x as char);
+    		drawchar(x as char);
+            //string.add_char(x);
 	    }
 	}
     }
@@ -135,4 +136,42 @@ fn screen() {
 
 pub unsafe fn init() {
     screen();
+}
+
+
+
+struct cstr {
+    p: *mut u8,
+    p_cstr_i: uint,
+    max: uint 
+}
+
+impl cstr {
+
+    pub unsafe fn new(size: uint) -> cstr {
+        // Sometimes this doesn't allocate enough memory and gets stuck...
+        let (x, y) = heap.alloc(size);
+        let this = cstr {
+            p: x,
+            p_cstr_i: 0,
+            max: y
+        };
+        *(((this.p as uint)+this.p_cstr_i) as *mut char) = '\0';
+        this
+    }
+
+    #[allow(dead_code)]
+    fn len(&self) -> uint { 
+        self.p_cstr_i 
+    }
+
+    unsafe fn add_char(&mut self, x: u8) -> bool{
+        if (self.p_cstr_i == self.max) { 
+            return false; 
+        }
+        *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
+        self.p_cstr_i += 1;
+        *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
+        true
+    }
 }
