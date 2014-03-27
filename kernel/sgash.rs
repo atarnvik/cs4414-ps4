@@ -21,7 +21,7 @@ pub fn putchar(key: char) {
 
 fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
-	putchar(*c as char);
+	   putchar(*c as char);
     }	
 }
 
@@ -29,9 +29,9 @@ pub unsafe fn drawstr(msg: &str) {
     let old_fg = super::super::io::FG_COLOR;
     let mut x: u32 = 0x6699AAFF;
     for c in slice::iter(as_bytes(msg)) {
-	x = (x << 8) + (x >> 24); 
-	super::super::io::set_fg(x);
-	drawchar(*c as char);
+    	x = (x << 8) + (x >> 24); 
+    	super::super::io::set_fg(x);
+    	drawchar(*c as char);
     }
     super::super::io::set_fg(old_fg);
 }
@@ -40,11 +40,12 @@ unsafe fn drawchar(x: char)
 {
     io::restore();
     if x == '\n' {
-	io::CURSOR_Y += io::CURSOR_HEIGHT;
-	io::CURSOR_X = 0u32;
-    } else {
-	io::draw_char(x);	
-	io::CURSOR_X += io::CURSOR_WIDTH;
+    	io::CURSOR_Y += io::CURSOR_HEIGHT;
+    	io::CURSOR_X = 0u32;
+    } 
+    else {
+    	io::draw_char(x);	
+    	io::CURSOR_X += io::CURSOR_WIDTH;
     }
     io::backup();
     io::draw_cursor();
@@ -54,8 +55,8 @@ unsafe fn backspace()
 {
     io::restore();
     if (io::CURSOR_X >= io::CURSOR_WIDTH) { 
-	io::CURSOR_X -= io::CURSOR_WIDTH;
-	io::draw_char(' ');
+    	io::CURSOR_X -= io::CURSOR_WIDTH;
+    	io::draw_char(' ');
     }
     io::backup();
     io::draw_cursor();
@@ -70,6 +71,8 @@ pub unsafe fn parsekey(x: char) {
 	13		=>	{ 
 	    putstr(&"\n");
 	    drawstr(&"\n");
+        putstr(&"sgash> ");
+        drawstr(&"sgash> ");
 	}
 	127		=>	{ 
 	    putchar('');
@@ -133,4 +136,3 @@ fn screen() {
 pub unsafe fn init() {
     screen();
 }
-
