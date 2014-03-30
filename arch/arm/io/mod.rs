@@ -25,7 +25,7 @@ pub static mut BG_COLOR: u32 = 0x00000000;
 pub static mut CURSOR_BUFFER: [u32, ..8*16] = [0x00FF0000, ..8*16];
 pub static mut SAVE_X: u32 = 0;
 pub static mut SAVE_Y: u32 = 0;
-pub static START_ADDR: u32 = 1024*1024;
+pub static START_ADDR: u32 = 0x100_100;
 pub static mut SCREEN_WIDTH: u32 = 0;
 pub static mut SCREEN_HEIGHT: u32 = 0;
 
@@ -117,7 +117,7 @@ pub unsafe fn draw_char(c: char)
 	{
 	    //let addr = START_ADDR + 4*(CURSOR_X + CURSOR_WIDTH - i + SCREEN_WIDTH*(CURSOR_Y + j));
 	    //let addr = START_ADDR + 4*(CURSOR_X + CURSOR_WIDTH + SCREEN_WIDTH*CURSOR_Y) - 4*i + 4*SCREEN_WIDTH*j
-	    if ((map[16-j] >> 4*(7-i)) & 1) == 1
+	    if ((map[/*16-*/j] >> 4*(/*7-*/i)) & 1) == 1
 	    {
 		*(addr as *mut u32) = FG_COLOR;
 	    }

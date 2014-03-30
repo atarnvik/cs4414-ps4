@@ -29,6 +29,15 @@ pub fn putchar(key: char) {
     }
 }
 
+pub fn putcstr(s : cstr) {
+	// get character
+	// while character is not ending character ('\0')
+		//putchar(character)
+		//increment character pointer
+		
+	while()
+}
+
 fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
 	   putchar(*c as char);
@@ -77,12 +86,9 @@ pub unsafe fn parsekey(x: char) {
     // Set this to false to learn the keycodes of various keys!
     // Key codes are printed backwards because life is hard
 
-    let mut string: cstr = cstr::new(256);
-    putstr("Hello");
-    string.add_char(x);
-
     match x { 
-	13		=>	{ 
+	13		=>	{
+		putcstr(buffer); 
 	    putstr(&"\n");
 	    drawstr(&"\n");
         putstr(&"sgash> ");
@@ -95,7 +101,7 @@ pub unsafe fn parsekey(x: char) {
 	    backspace();
 	}
 	_		=>	{ 
-	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH {
+	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH  && buffer.add_char(x) {
     		putchar(x as char);
     		drawchar(x as char);
             //string.add_char(x);
@@ -151,8 +157,11 @@ fn screen() {
 pub unsafe fn init() {
 	buffer = cstr::new(256);
     screen();
-    buffer.add_char('c' as u8);
+    //buffer.add_char('c' as u8);
     //putstr(&buffer);
+    let mut string: cstr = cstr::new(256);
+    putstr("Hello");
+    string.add_char('x' as u8);
 }
 
 
@@ -167,14 +176,6 @@ impl cstr {
 
     pub unsafe fn new(size: uint) -> cstr {
         // Sometimes this doesn't allocate enough memory and gets stuck..
-
-         // let storage : BitvStorage;
-         // let bitv : Bitv = Bitv {storage: storage};
-
-         // let buddy : BuddyAlloc = BuddyAlloc::new(2, bitv);
-         // let mybase : *mut u8;
-         // let myMemory = Alloc {parent: buddy, base: mybase, el_size: 8};
-         // let (x,y) = myMemory.alloc(256);
 
         let (x,y) = heap.alloc(size);
 
@@ -193,16 +194,16 @@ impl cstr {
     }
 
     unsafe fn add_char(&mut self, x: u8) -> bool{
-        putstr("1");
+        //putstr("1");
         if (self.p_cstr_i == self.max) { 
             return false; 
         }
-        putstr("2");
+        //putstr("2");
         *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
-        putstr("3");
+        //putstr("3");
         self.p_cstr_i += 1;
         *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
-        putstr("4");
+        //putstr("4");
         true
     }
 }
