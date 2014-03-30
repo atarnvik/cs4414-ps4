@@ -12,6 +12,12 @@ use kernel::memory::Bitv;
 use kernel::memory::BitvStorage;
 use kernel::memory::Alloc;
 
+pub static mut buffer: cstr = cstr {
+				p: 0 as *mut u8,
+				p_cstr_i: 0,
+				max: 0
+			      };
+
 pub fn putchar(key: char) {
     unsafe {
 	/*
@@ -71,9 +77,9 @@ pub unsafe fn parsekey(x: char) {
     // Set this to false to learn the keycodes of various keys!
     // Key codes are printed backwards because life is hard
 
-    //let mut string: cstr = cstr::new(256);
-    //putstr("Hello");
-    //string.add_char(x);
+    let mut string: cstr = cstr::new(256);
+    putstr("Hello");
+    string.add_char(x);
 
     match x { 
 	13		=>	{ 
@@ -143,7 +149,10 @@ fn screen() {
 }
 
 pub unsafe fn init() {
+	buffer = cstr::new(256);
     screen();
+    buffer.add_char('c' as u8);
+    //putstr(&buffer);
 }
 
 
@@ -159,13 +168,13 @@ impl cstr {
     pub unsafe fn new(size: uint) -> cstr {
         // Sometimes this doesn't allocate enough memory and gets stuck..
 
-        // let storage : BitvStorage;
-        // let bitv : Bitv = Bitv {storage: storage};
+         // let storage : BitvStorage;
+         // let bitv : Bitv = Bitv {storage: storage};
 
-        // let buddy : BuddyAlloc = BuddyAlloc::new(2, bitv);
-        // let mybase : *mut u8;
-        // let myMemory = Alloc {parent: buddy, base: mybase, el_size: 8};
-        // let (x,y) = myMemory.alloc(256);
+         // let buddy : BuddyAlloc = BuddyAlloc::new(2, bitv);
+         // let mybase : *mut u8;
+         // let myMemory = Alloc {parent: buddy, base: mybase, el_size: 8};
+         // let (x,y) = myMemory.alloc(256);
 
         let (x,y) = heap.alloc(size);
 
