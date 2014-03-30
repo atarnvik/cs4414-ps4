@@ -7,6 +7,10 @@ use core::iter::Iterator;
 use kernel::*;
 use super::super::platform::*;
 use kernel::memory::Allocator;
+use kernel::memory::BuddyAlloc;
+use kernel::memory::Bitv;
+use kernel::memory::BitvStorage;
+use kernel::memory::Alloc;
 
 pub fn putchar(key: char) {
     unsafe {
@@ -66,6 +70,10 @@ pub unsafe fn parsekey(x: char) {
     let x = x as u8;
     // Set this to false to learn the keycodes of various keys!
     // Key codes are printed backwards because life is hard
+
+    //let mut string: cstr = cstr::new(256);
+    //putstr("Hello");
+    //string.add_char(x);
 
     match x { 
 	13		=>	{ 
@@ -149,8 +157,18 @@ struct cstr {
 impl cstr {
 
     pub unsafe fn new(size: uint) -> cstr {
-        // Sometimes this doesn't allocate enough memory and gets stuck...
-        let (x, y) = heap.alloc(size);
+        // Sometimes this doesn't allocate enough memory and gets stuck..
+
+        // let storage : BitvStorage;
+        // let bitv : Bitv = Bitv {storage: storage};
+
+        // let buddy : BuddyAlloc = BuddyAlloc::new(2, bitv);
+        // let mybase : *mut u8;
+        // let myMemory = Alloc {parent: buddy, base: mybase, el_size: 8};
+        // let (x,y) = myMemory.alloc(256);
+
+        let (x,y) = heap.alloc(size);
+
         let this = cstr {
             p: x,
             p_cstr_i: 0,
@@ -166,12 +184,16 @@ impl cstr {
     }
 
     unsafe fn add_char(&mut self, x: u8) -> bool{
+        putstr("1");
         if (self.p_cstr_i == self.max) { 
             return false; 
         }
+        putstr("2");
         *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
+        putstr("3");
         self.p_cstr_i += 1;
         *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
+        putstr("4");
         true
     }
 }
