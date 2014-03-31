@@ -29,15 +29,6 @@ pub fn putchar(key: char) {
     }
 }
 
-pub fn putcstr(s : cstr) {
-	// get character
-	// while character is not ending character ('\0')
-		//putchar(character)
-		//increment character pointer
-		
-	while()
-}
-
 fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
 	   putchar(*c as char);
@@ -88,23 +79,25 @@ pub unsafe fn parsekey(x: char) {
 
     match x { 
 	13		=>	{
-		putcstr(buffer); 
 	    putstr(&"\n");
 	    drawstr(&"\n");
+        echo();
         putstr(&"sgash> ");
         drawstr(&"sgash> ");
+        buffer.reset();
 	}
 	127		=>	{ 
 	    putchar('');
 	    putchar(' ');
 	    putchar(''); 
 	    backspace();
+        buffer.delete_char();
+
 	}
 	_		=>	{ 
 	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH  && buffer.add_char(x) {
     		putchar(x as char);
     		drawchar(x as char);
-            //string.add_char(x);
 	    }
 	}
     }
@@ -159,9 +152,29 @@ pub unsafe fn init() {
     screen();
     //buffer.add_char('c' as u8);
     //putstr(&buffer);
-    let mut string: cstr = cstr::new(256);
-    putstr("Hello");
-    string.add_char('x' as u8);
+    // let mut string: cstr = cstr::new(256);
+    // putstr("Hello");
+    // string.add_char('x' as u8);
+}
+
+pub unsafe fn echo() -> bool{
+    let s = buffer.p as uint;
+    let e = buffer.max;
+    let mut i = 0;
+    while i < e {
+        let theChar : u8 = *((s+i) as *mut u8);
+        if(theChar as char != '\0') {
+            putchar(theChar as char);
+            drawchar(theChar as char);
+            i +=1;
+        }
+        else {
+            drawstr(&"\n");
+            putstr(&"\n");
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -205,5 +218,33 @@ impl cstr {
         *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
         //putstr("4");
         true
+    }
+
+    unsafe fn delete_char(&mut self) -> bool {
+        if (self.p_cstr_i == 0) { return false; }
+        self.p_cstr_i -= 1;
+        *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
+        true
+    }
+
+    unsafe fn reset(&mut self) {
+        self.p_cstr_i = 0; 
+        *(self.p as *mut char) = '\0';
+    }
+
+    unsafe fn eq(&self, other: &cstr) -> bool {
+        if (self.len() != other.len()) { return false; }
+        else {
+            let mut x = 0;
+            let mut selfp: uint = self.p as uint;
+            let mut otherp: uint = other.p as uint;
+            while x < self.len() {
+                if (*(selfp as *char) != *(otherp as *char)) { return false; }
+                selfp += 1;
+                otherp += 1;
+                x += 1;
+            }
+            true
+        }
     }
 }
