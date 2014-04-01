@@ -1,5 +1,6 @@
 /* kernel::sgash.rs */
 #[allow(unused_imports)];
+use std::path::*;
 use core::*;
 use core::str::*;
 use core::option::{Some, Option, None}; 
@@ -79,11 +80,9 @@ pub unsafe fn parsekey(x: char) {
 
     match x { 
 	13		=>	{
-	    putstr(&"\n");
-	    drawstr(&"\n");
-        echo();
-        putstr(&"sgash> ");
-        drawstr(&"sgash> ");
+		parse();
+		putstr(&"\nsgash> ");
+		drawstr(&"\nsgash> ");
         buffer.reset();
 	}
 	127		=>	{ 
@@ -101,6 +100,49 @@ pub unsafe fn parsekey(x: char) {
 	    }
 	}
     }
+}
+
+unsafe fn parse(){
+	if(buffer.equals(&"freeze")){
+		putstr(&"\nTHIS IS A STICK UP!!");
+		drawstr(&"\nTHIS IS A STICK UP!!");
+	};
+	// cd, rm, mkdir, pwd
+	// match buffer.getarg(' ', 0) {
+	//     Some(a) => {
+	//     	if(a.equals(&"echo")) {
+	//     		echo();
+	// 		}
+	// 		if(a.equals(&"ls")) {
+	// 		    putstr(&"\nfile list");
+	// 		    drawstr(&"\nfile list");
+	// 		}
+	// 		if(a.equals(&"pwd")) {
+	// 		    putstr(&"\nmy directory");
+	// 		    drawstr(&"\nmy directory");
+	// 		}
+	// 		if(a.equals(&"mkdir")) {
+	// 			match buffer.getarg(' ', 1){
+	// 				Some(b) =>{
+	// 					putstr(&"");
+	// 					drawstr(&a);
+	// 				}
+	// 				None => {}
+	// 			};
+	// 		}
+	// 		f(a.equals(&"cat")) {
+	// 			match buffer.getarg(' ', 1){
+	// 				Some(b) =>{
+	// 					putstr(&a);
+	// 					drawstr(&a);
+	// 				}
+	// 				None => {}
+	// 			};
+	// 		}
+	//     }
+	//     None => { }
+	// };
+	// buffer.reset();
 }
 
 fn screen() {
@@ -150,11 +192,9 @@ fn screen() {
 pub unsafe fn init() {
 	buffer = cstr::new(256);
     screen();
-    //buffer.add_char('c' as u8);
-    //putstr(&buffer);
-    // let mut string: cstr = cstr::new(256);
-    // putstr("Hello");
-    // string.add_char('x' as u8);
+   	putstr(&"\nsgash> ");
+	//drawstr(&"\nsgash> ");
+	buffer.reset();
 }
 
 pub unsafe fn echo() -> bool{
@@ -232,19 +272,44 @@ impl cstr {
         *(self.p as *mut char) = '\0';
     }
 
-    unsafe fn eq(&self, other: &cstr) -> bool {
-        if (self.len() != other.len()) { return false; }
-        else {
-            let mut x = 0;
-            let mut selfp: uint = self.p as uint;
-            let mut otherp: uint = other.p as uint;
-            while x < self.len() {
-                if (*(selfp as *char) != *(otherp as *char)) { return false; }
-                selfp += 1;
-                otherp += 1;
-                x += 1;
-            }
-            true
-        }
+    unsafe fn equals(&self, other: &str) -> bool {
+    	// save val of self.p, which is u8, as a unit
+    	let mut selfp: uint = self.p as uint;
+    	// iterate through the str "other"
+    	for c in slice::iter(as_bytes(other)){
+    		// return false if any character does not match
+    		if( *c != *(selfp as *u8) ) { return false; }
+    		selfp += 1;
+    	};
+    	return true;
+    	*(selfp as *char) == '\0'
     }
+
+	unsafe fn getarg(&self, delim: char, mut k: uint) -> Option<cstr> {
+		let mut ind: uint = 0;
+		let mut found = k == 0;
+		let mut selfp: uint = self.p as uint;
+		let mut s = cstr::new(256);
+		loop {
+			if (*(selfp as *char) == '\0') { 
+				// End of string
+				if (found) { return Some(s); }
+				else { return None; }
+			};
+			if (*(selfp as *u8) == delim as u8) { 
+				if (found) { return Some(s); }
+				k -= 1;
+			};
+			if (found) {
+				s.add_char(*(selfp as *u8));
+			};
+			found = k == 0;
+			selfp += 1;
+			ind += 1;
+			if (ind == self.max) { 
+				putstr(&"\nSomething broke!");
+				return None; 
+			}
+		}
+	}
 }
