@@ -123,11 +123,9 @@ unsafe fn parse(){
 		putstr(&"\nTHIS IS A STICK UP!!");
 		//drawstr(&"\nTHIS IS A STICK UP!!");
 	};
-    drawcstr(buffer);
 	// cd, rm, mkdir, pwd
 	match buffer.getarg(' ', buffer.max) {
 	    Some(a) => {
-            drawcstr(a);
 	    	if(a.equals(&"echo")) {
 	    		echo();
 			}
@@ -228,7 +226,11 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             i +=1;
         }
         else {
+<<<<<<< HEAD
             drawstr(&"\n");
+=======
+        	drawstr(&"\n");
+>>>>>>> 6a658aa2ae53b6a8886078ceb71900d7ed1b091f
             return true;
         }
     }
