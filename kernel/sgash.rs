@@ -115,11 +115,17 @@ pub unsafe fn parsekey(x: char) {
 
 unsafe fn parse(){
 	// cd, rm, mkdir, pwd
-    putstr(&"\n\n\n");
+    //putstr(&"\n\n\n");
 	match buffer.getarg(' ', 0) {
 	    Some(a) => {
 	    	if(a.equals(&"echo")) {
-	    		echo();
+                match buffer.getarg(' ', 1) {
+                    Some(z) => {
+                        drawchar('\n');
+                        drawcstr(z);
+                    }
+                    None => {}
+                }
 			}
 			if(a.equals(&"ls")) {
 			    putstr(&"\nfile list");
@@ -252,7 +258,6 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             i +=1;
         }
         else {
-        	drawstr(&"\n");
             return true;
         }
     }
