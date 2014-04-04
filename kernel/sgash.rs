@@ -1,5 +1,6 @@
 /* kernel::sgash.rs */
 #[allow(unused_imports)];
+
 //use std::path::*;
 use core::*;
 use core::str::*;
@@ -20,17 +21,14 @@ pub static mut buffer: cstr = cstr {
 				max: 0
 			      };
 
-pub static mut buffer2: cstr = cstr {
-                p: 0  as *mut u8,
-                p_cstr_i: 0,
-                max: 256
-                  };
-
 pub static mut s: cstr = cstr {
                 p: 0 as *mut u8,
                 p_cstr_i: 0,
                 max: 256
                   };
+
+pub static mut root: Option<Treenode> = None;
+pub static mut cwd : Option<Treenode> = None;
 
 pub fn putchar(key: char) {
     unsafe {
@@ -218,10 +216,18 @@ fn screen() {
 pub unsafe fn init() {
 	buffer = cstr::new(256);
     //s = cstr::new(256);
-    buffer2 = cstr::new(256);
+    //buffer2 = cstr::new(256);
     screen();
    	putstr(&"\nsgash> ");
 	//drawstr(&"\nsgash> ");
+    let mut mainFile : cstr = cstr::new(256);
+
+    mainFile = from_str("SupremeBeing");
+
+    let root : Treenode = Treenode::new(mainFile, false, None, None, None, None, None);
+    putcstr(root.getVal());
+    drawcstr(root.getVal());
+
 	buffer.reset();
 }
 
@@ -275,7 +281,50 @@ pub unsafe fn echo() -> bool{
     return false;
 }
 
+pub unsafe fn write_file(file: Treenode, string : cstr) {
 
+}
+
+unsafe fn from_str(s: &str) -> cstr {
+    let mut this = cstr::new(256);
+    for c in slice::iter(as_bytes(s)) {
+        this.add_char(*c);
+    };
+    this
+}
+
+struct Treenode {
+    addr : *mut u8,
+    val : cstr,
+    isFile : bool,
+    parent : Option<*mut Treenode>,
+    next : Option<*mut Treenode>,
+    prev : Option<*mut Treenode>,
+    childrenHead : Option<*mut Treenode>,
+    childrenTail : Option<*mut Treenode>,
+} 
+
+impl Treenode {
+    pub unsafe fn new(val1 : cstr, file : bool, parent1 : Option<*mut Treenode>, next1 : Option<*mut Treenode>, prev1 : Option<*mut Treenode>, childrenHead1 : Option<*mut Treenode>, childrenTail1 : Option<*mut Treenode>) -> Treenode {
+        let(x, y) = heap.alloc(262);
+
+        let this = Treenode {
+            addr : x,
+            isFile : file,
+            val : val1,
+            childrenHead : childrenHead1,
+            childrenTail: childrenTail1,
+            prev : prev1,
+            next : next1,
+            parent : parent1
+        };
+        this
+    }
+
+    unsafe fn getVal(&self) -> cstr {
+        self.val
+    }
+}
 
 struct cstr {
     p: *mut u8,
@@ -302,14 +351,6 @@ impl cstr {
     fn len(&self) -> uint { 
         self.p_cstr_i 
     }
-
-    // unsafe fn add_char(&mut self, x: u8) -> bool{
-    //     if (self.p_cstr_i == self.max) { return false; }
-    //     *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
-    //     self.p_cstr_i += 1;
-    //     *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
-    //     true
-    // }
 
     unsafe fn add_char(&mut self, x: u8) -> bool{
         //putstr("1");
