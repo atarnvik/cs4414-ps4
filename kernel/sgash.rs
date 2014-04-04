@@ -107,11 +107,9 @@ unsafe fn parse(){
 		putstr(&"\nTHIS IS A STICK UP!!");
 		drawstr(&"\nTHIS IS A STICK UP!!");
 	};
-    drawcstr(buffer);
 	// cd, rm, mkdir, pwd
 	match buffer.getarg(' ', 0) {
 	    Some(a) => {
-            drawcstr(a);
 	    	if(a.equals(&"echo")) {
 	    		echo();
 			}
@@ -210,6 +208,7 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             i +=1;
         }
         else {
+        	drawstr(&"\n");
             return true;
         }
     }
