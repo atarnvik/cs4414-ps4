@@ -107,9 +107,11 @@ unsafe fn parse(){
 		putstr(&"\nTHIS IS A STICK UP!!");
 		drawstr(&"\nTHIS IS A STICK UP!!");
 	};
+    drawcstr(buffer);
 	// cd, rm, mkdir, pwd
 	match buffer.getarg(' ', 0) {
 	    Some(a) => {
+            drawcstr(a);
 	    	if(a.equals(&"echo")) {
 	    		echo();
 			}
@@ -195,6 +197,23 @@ pub unsafe fn init() {
    	putstr(&"\nsgash> ");
 	//drawstr(&"\nsgash> ");
 	buffer.reset();
+}
+
+pub unsafe fn drawcstr(string : cstr) -> bool{
+    let s = string.p as uint;
+    let e = string.max;
+    let mut i = 0;
+    while i < e {
+        let theChar : u8 = *((s+i) as *mut u8);
+        if(theChar as char != '\0') {
+            drawchar(theChar as char);
+            i +=1;
+        }
+        else {
+            return true;
+        }
+    }
+    return false;
 }
 
 pub unsafe fn echo() -> bool{
