@@ -156,7 +156,7 @@ impl BuddyAlloc {
 
                     if index == 0 {
                         // out of memory -- back at tree's root after traversal
-			out_of_memory();
+			         //out_of_memory();
                         return (0, 0);
                     }
 

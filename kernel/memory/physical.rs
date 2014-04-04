@@ -5,7 +5,7 @@ use kernel::memory;
 use kernel::memory::Allocator;
 
 pub static mut frames: memory::Alloc = memory::Alloc {
-    base: 0x200_000 as *mut u8,
+    base: 0x100_000 as *mut u8,
     el_size: 12,
     parent: memory::BuddyAlloc {
         order: 13,

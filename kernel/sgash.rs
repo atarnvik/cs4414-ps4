@@ -1,6 +1,6 @@
 /* kernel::sgash.rs */
 #[allow(unused_imports)];
-use std::path::*;
+//use std::path::*;
 use core::*;
 use core::str::*;
 use core::option::{Some, Option, None}; 
@@ -108,41 +108,41 @@ unsafe fn parse(){
 		drawstr(&"\nTHIS IS A STICK UP!!");
 	};
 	// cd, rm, mkdir, pwd
-	// match buffer.getarg(' ', 0) {
-	//     Some(a) => {
-	//     	if(a.equals(&"echo")) {
-	//     		echo();
-	// 		}
-	// 		if(a.equals(&"ls")) {
-	// 		    putstr(&"\nfile list");
-	// 		    drawstr(&"\nfile list");
-	// 		}
-	// 		if(a.equals(&"pwd")) {
-	// 		    putstr(&"\nmy directory");
-	// 		    drawstr(&"\nmy directory");
-	// 		}
-	// 		if(a.equals(&"mkdir")) {
-	// 			match buffer.getarg(' ', 1){
-	// 				Some(b) =>{
-	// 					putstr(&"");
-	// 					drawstr(&a);
-	// 				}
-	// 				None => {}
-	// 			};
-	// 		}
-	// 		f(a.equals(&"cat")) {
-	// 			match buffer.getarg(' ', 1){
-	// 				Some(b) =>{
-	// 					putstr(&a);
-	// 					drawstr(&a);
-	// 				}
-	// 				None => {}
-	// 			};
-	// 		}
-	//     }
-	//     None => { }
-	// };
-	// buffer.reset();
+	match buffer.getarg(' ', 0) {
+	    Some(a) => {
+	    	if(a.equals(&"echo")) {
+	    		echo();
+			}
+			if(a.equals(&"ls")) {
+			    //putstr(&"\nfile list");
+			    //drawstr(&"\nfile list");
+			}
+			if(a.equals(&"pwd")) {
+			    //putstr(&"\nmy directory");
+			    //drawstr(&"\nmy directory");
+			}
+			if(a.equals(&"mkdir")) {
+				match buffer.getarg(' ', 1){
+					Some(b) =>{
+						//putstr(&"");
+						//drawstr(&a);
+					}
+					None => {}
+				};
+			}
+			if(a.equals(&"cat")) {
+				match buffer.getarg(' ', 1){
+					Some(b) =>{
+						//putstr(&a);
+						//drawstr(&a);
+					}
+					None => {}
+				};
+			}
+	    }
+	    None => { }
+	};
+	buffer.reset();
 }
 
 fn screen() {
