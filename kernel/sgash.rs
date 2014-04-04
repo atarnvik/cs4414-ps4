@@ -7,11 +7,12 @@ use core::option::{Some, Option, None};
 use core::iter::Iterator;
 use kernel::*;
 use super::super::platform::*;
-use kernel::memory::Allocator;
+use kernel::memory::allocator;
 use kernel::memory::BuddyAlloc;
 use kernel::memory::Bitv;
 use kernel::memory::BitvStorage;
 use kernel::memory::Alloc;
+use kernel::memory;
 
 pub static mut buffer: cstr = cstr {
 				p: 0 as *mut u8,
@@ -119,18 +120,40 @@ unsafe fn parse(){
     // }
     // test.reset();
 
+    match buffer.getarg(' ', 0) {
+        Some(a) => {
+            putstr(&"\nBuffer.getarg 0: ");
+            putcstr(a);
+        }
+                None => { }
+
+    }
+
+
+
+
 	if(buffer.equals(&"freeze")){
 		putstr(&"\nTHIS IS A STICK UP!!");
 		//drawstr(&"\nTHIS IS A STICK UP!!");
 	};
 	// cd, rm, mkdir, pwd
-	match buffer.getarg(' ', buffer.max) {
+    putstr(&"\nBuffer = ");
+    putcstr(buffer);
+
+    drawstr(&"\nBuffer = ");
+    drawcstr(buffer);
+    if (buffer.equals(&"ls")) {
+        putstr("list files");
+    }
+	match buffer.getarg(' ', 0) {
 	    Some(a) => {
+            drawstr(&"\na is: ");
+            
 	    	if(a.equals(&"echo")) {
 	    		echo();
 			}
 			if(a.equals(&"ls")) {
-			    //putstr(&"\nfile list");
+			    putstr(&"\nfile list");
 			    //drawstr(&"\nfile list");
 			}
 			if(a.equals(&"pwd")) {
@@ -214,6 +237,15 @@ pub unsafe fn init() {
 	buffer.reset();
 }
 
+pub unsafe fn putcstr(s: cstr) {
+    let mut p = s.p as uint;
+    while *(p as *char) != '\0'
+    {
+        putchar(*(p as *char));
+        p += 1;
+    }
+}
+
 pub unsafe fn drawcstr(string : cstr) -> bool{
     let s = string.p as uint;
     let e = string.max;
@@ -226,11 +258,8 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             i +=1;
         }
         else {
-<<<<<<< HEAD
             drawstr(&"\n");
-=======
         	drawstr(&"\n");
->>>>>>> 6a658aa2ae53b6a8886078ceb71900d7ed1b091f
             return true;
         }
     }
@@ -270,7 +299,7 @@ impl cstr {
     pub unsafe fn new(size: uint) -> cstr {
         // Sometimes this doesn't allocate enough memory and gets stuck..
 
-        let (x,y) = heap.alloc(size);
+        let (x,y) = memory::allocator.alloc(size);
 
         let this = cstr {
             p: x,
@@ -324,9 +353,16 @@ impl cstr {
     	// save val of self.p, which is u8, as a unit
     	let mut selfp: uint = self.p as uint;
     	// iterate through the str "other"
+        putstr(&"\nbuffer from inside equals: ");
+        putcstr(*self);
+        putstr(&"\nComparing to other: ");
+        putstr(other);
+        putstr(&"\n");
     	for c in slice::iter(as_bytes(other)){
     		// return false if any character does not match
-    		if( *c != *(selfp as *u8) ) { return false; }
+    		if( *c != *(selfp as *u8) ) { 
+                return false; 
+            }
     		selfp += 1;
     	};
     	return true;
@@ -337,7 +373,9 @@ impl cstr {
 		let mut ind: uint = 0;
 		let mut found = k == 0;
 		let mut selfp: uint = self.p as uint;
-		let mut s = cstr::new(256);
+		putstr(&"self from within getarg: ");
+        putcstr(*self);
+        let mut s = cstr::new(256);
 		loop {
 			if (*(selfp as *char) == '\0') { 
 				// End of string
