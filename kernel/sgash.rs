@@ -19,6 +19,12 @@ pub static mut buffer: cstr = cstr {
 				max: 0
 			      };
 
+pub static mut test: cstr = cstr {
+                p: 0 as *mut u8,
+                p_cstr_i: 0,
+                max: 0
+                  };
+
 pub fn putchar(key: char) {
     unsafe {
 	/*
@@ -103,13 +109,23 @@ pub unsafe fn parsekey(x: char) {
 }
 
 unsafe fn parse(){
+    // match test.add_char('a' as u8) {
+    //     true => { putstr(&"added "); }
+    //     false => { putstr(&"couldn't add "); }
+    // }
+    // match drawcstr(test) {
+    //     true => {  putstr(&"draw worked");  }
+    //     false => { putstr(&"nooooooope"); }
+    // }
+    // test.reset();
+
 	if(buffer.equals(&"freeze")){
 		putstr(&"\nTHIS IS A STICK UP!!");
-		drawstr(&"\nTHIS IS A STICK UP!!");
+		//drawstr(&"\nTHIS IS A STICK UP!!");
 	};
     drawcstr(buffer);
 	// cd, rm, mkdir, pwd
-	match buffer.getarg(' ', 0) {
+	match buffer.getarg(' ', buffer.max) {
 	    Some(a) => {
             drawcstr(a);
 	    	if(a.equals(&"echo")) {
@@ -193,6 +209,7 @@ fn screen() {
 
 pub unsafe fn init() {
 	buffer = cstr::new(256);
+    test = cstr::new(256);
     screen();
    	putstr(&"\nsgash> ");
 	//drawstr(&"\nsgash> ");
@@ -204,12 +221,14 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
     let e = string.max;
     let mut i = 0;
     while i < e {
+        //putstr(&"inside while");
         let theChar : u8 = *((s+i) as *mut u8);
         if(theChar as char != '\0') {
             drawchar(theChar as char);
             i +=1;
         }
         else {
+            drawstr(&"\n");
             return true;
         }
     }
@@ -264,6 +283,14 @@ impl cstr {
     fn len(&self) -> uint { 
         self.p_cstr_i 
     }
+
+    // unsafe fn add_char(&mut self, x: u8) -> bool{
+    //     if (self.p_cstr_i == self.max) { return false; }
+    //     *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
+    //     self.p_cstr_i += 1;
+    //     *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
+    //     true
+    // }
 
     unsafe fn add_char(&mut self, x: u8) -> bool{
         //putstr("1");

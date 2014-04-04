@@ -174,7 +174,32 @@ impl BuddyAlloc {
         loop {
             match self.tree.get(index) {
                 UNUSED => return,
-                USED => self.tree.set(index, UNUSED),
+                USED => //self.tree.set(index, UNUSED), 
+                loop {
+                    if index == 0 {
+                        self.tree.set(0, UNUSED);
+                        return;
+                    }
+
+                    let buddy = index - 1 + (index & 1) * 2;
+                    match self.tree.get(buddy) {
+                        UNUSED => {}
+                        _ => {
+                            self.tree.set(index, UNUSED);
+                            loop {
+                                let parent = (index + 1) / 2 - 1; // parent
+                                match self.tree.get(parent) {
+                                    FULL if index > 0 => {
+                                        self.tree.set(parent, SPLIT);
+                                    }
+                                    _ => return
+                                }
+                                index = parent;
+                            }
+                        }
+                    }
+                    index = (index + 1) / 2 - 1; // parent
+                },
                 _ => {
                     length /= 2;
                     if offset < left + length {
