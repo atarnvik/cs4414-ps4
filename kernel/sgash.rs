@@ -1,7 +1,6 @@
 /* kernel::sgash.rs */
 #[allow(unused_imports)];
 
-//use std::path::*;
 use core::*;
 use core::str::*;
 use core::option::{Some, Option, None}; 
@@ -27,8 +26,16 @@ pub static mut s: cstr = cstr {
                 max: 256
                   };
 
-pub static mut root: Option<Treenode> = None;
-pub static mut cwd : Option<Treenode> = None;
+pub static mut root: Treenode = Treenode {
+                    addr : 0 as *mut u8,
+                    val : None, 
+                    isFile : false,
+                    parent : None,
+                    next : None,
+                    prev : None,
+                    childrenHead : None,
+                    childrenTail : None,
+                    };
 
 pub fn putchar(key: char) {
     unsafe {
@@ -230,9 +237,14 @@ pub unsafe fn init() {
 
     mainFile = from_str("SupremeBeing");
 
-    let root : Treenode = Treenode::new(mainFile, false, None, None, None, None, None);
-    putcstr(root.getVal());
-    drawcstr(root.getVal());
+    root = Treenode::new(Some(mainFile), false, None, None, None, None, None);
+    match(root.getVal()) {
+        Some(a) => { 
+            putcstr(a); 
+            drawcstr(a);
+        }
+        None => { }
+    }
 
 	buffer.reset();
 }
@@ -290,7 +302,12 @@ pub unsafe fn write_file(file: Treenode, string : cstr) {
 
 }
 
-unsafe fn from_str(s: &str) -> cstr {
+pub unsafe fn create_file(name : cstr) {
+     let mut file : Treenode = Treenode::new(Some(name), true, Some(root), None, None, None, None);
+     //*cwd.children
+}
+
+pub unsafe fn from_str(s: &str) -> cstr {
     let mut this = cstr::new(256);
     for c in slice::iter(as_bytes(s)) {
         this.add_char(*c);
@@ -300,17 +317,17 @@ unsafe fn from_str(s: &str) -> cstr {
 
 struct Treenode {
     addr : *mut u8,
-    val : cstr,
+    val : Option<cstr>,
     isFile : bool,
-    parent : Option<*mut Treenode>,
-    next : Option<*mut Treenode>,
-    prev : Option<*mut Treenode>,
-    childrenHead : Option<*mut Treenode>,
-    childrenTail : Option<*mut Treenode>,
+    parent : Option<Treenode>,
+    next : Option<Treenode>,
+    prev : Option<Treenode>,
+    childrenHead : Option<Treenode>,
+    childrenTail : Option<Treenode>,
 } 
 
 impl Treenode {
-    pub unsafe fn new(val1 : cstr, file : bool, parent1 : Option<*mut Treenode>, next1 : Option<*mut Treenode>, prev1 : Option<*mut Treenode>, childrenHead1 : Option<*mut Treenode>, childrenTail1 : Option<*mut Treenode>) -> Treenode {
+    pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<Treenode>, next1 : Option<Treenode>, prev1 : Option<Treenode>, childrenHead1 : Option<Treenode>, childrenTail1 : Option<Treenode>) -> Treenode {
         let(x, y) = heap.alloc(262);
 
         let this = Treenode {
@@ -326,8 +343,11 @@ impl Treenode {
         this
     }
 
-    unsafe fn getVal(&self) -> cstr {
-        self.val
+    unsafe fn getVal(&self) -> Option<cstr> {
+        match(self.val) {
+            Some(a) => { return Some(a); }
+            None => { return None; }
+        }
     }
 }
 
