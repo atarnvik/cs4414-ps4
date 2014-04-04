@@ -174,7 +174,7 @@ impl BuddyAlloc {
         loop {
             match self.tree.get(index) {
                 UNUSED => return,
-                USED => //self.tree.set(index, UNUSED), 
+                USED => 
                 loop {
                     if index == 0 {
                         self.tree.set(0, UNUSED);

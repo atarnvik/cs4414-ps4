@@ -7,7 +7,7 @@ use core::option::{Some, Option, None};
 use core::iter::Iterator;
 use kernel::*;
 use super::super::platform::*;
-use kernel::memory::allocator;
+use kernel::memory::Allocator;
 use kernel::memory::BuddyAlloc;
 use kernel::memory::Bitv;
 use kernel::memory::BitvStorage;
@@ -20,10 +20,16 @@ pub static mut buffer: cstr = cstr {
 				max: 0
 			      };
 
-pub static mut test: cstr = cstr {
+pub static mut buffer2: cstr = cstr {
+                p: 0  as *mut u8,
+                p_cstr_i: 0,
+                max: 256
+                  };
+
+pub static mut s: cstr = cstr {
                 p: 0 as *mut u8,
                 p_cstr_i: 0,
-                max: 0
+                max: 256
                   };
 
 pub fn putchar(key: char) {
@@ -110,74 +116,55 @@ pub unsafe fn parsekey(x: char) {
 }
 
 unsafe fn parse(){
-    // match test.add_char('a' as u8) {
-    //     true => { putstr(&"added "); }
-    //     false => { putstr(&"couldn't add "); }
-    // }
-    // match drawcstr(test) {
-    //     true => {  putstr(&"draw worked");  }
-    //     false => { putstr(&"nooooooope"); }
-    // }
-    // test.reset();
-
-    match buffer.getarg(' ', 0) {
-        Some(a) => {
-            putstr(&"\nBuffer.getarg 0: ");
-            putcstr(a);
-        }
-                None => { }
-
-    }
-
-
-
-
-	if(buffer.equals(&"freeze")){
-		putstr(&"\nTHIS IS A STICK UP!!");
-		//drawstr(&"\nTHIS IS A STICK UP!!");
-	};
 	// cd, rm, mkdir, pwd
-    putstr(&"\nBuffer = ");
-    putcstr(buffer);
-
-    drawstr(&"\nBuffer = ");
-    drawcstr(buffer);
-    if (buffer.equals(&"ls")) {
-        putstr("list files");
-    }
+    putstr(&"\n\n\n");
 	match buffer.getarg(' ', 0) {
 	    Some(a) => {
-            drawstr(&"\na is: ");
-            
 	    	if(a.equals(&"echo")) {
 	    		echo();
 			}
 			if(a.equals(&"ls")) {
 			    putstr(&"\nfile list");
-			    //drawstr(&"\nfile list");
+			    drawstr(&"\nfile list");
 			}
-			if(a.equals(&"pwd")) {
-			    //putstr(&"\nmy directory");
-			    //drawstr(&"\nmy directory");
-			}
+            if(a.equals(&"cat")) {
+                putstr(&"\n");
+                drawstr(&"\n");
+                match buffer.getarg(' ', 1){
+                    Some(b) =>{
+                        putcstr(b);
+                        drawcstr(b);
+                    }
+                    None => {}
+                };
+            }
+            if(a.equals(&"cd")) {
+                putstr(&"\nchange directory");
+                drawstr(&"\nhange directory");
+            }
+            if(a.equals(&"rm")) {
+                putstr(&"\nremove");
+                drawstr(&"\nremove");
+            }
 			if(a.equals(&"mkdir")) {
+                putstr(&"\n");
+                drawstr(&"\n");
 				match buffer.getarg(' ', 1){
 					Some(b) =>{
-						//putstr(&"");
-						//drawstr(&a);
+						putcstr(b);
+						drawcstr(b);
 					}
 					None => {}
 				};
 			}
-			if(a.equals(&"cat")) {
-				match buffer.getarg(' ', 1){
-					Some(b) =>{
-						//putstr(&a);
-						//drawstr(&a);
-					}
-					None => {}
-				};
-			}
+            if(a.equals(&"pwd")) {
+                putstr(&"\nmy directory");
+                drawstr(&"\nmy directory");
+            }
+            if(a.equals(&"wr")) {
+                putstr(&"\nwrite file");
+                drawstr(&"\nwrite file");
+            }
 	    }
 	    None => { }
 	};
@@ -230,7 +217,8 @@ fn screen() {
 
 pub unsafe fn init() {
 	buffer = cstr::new(256);
-    test = cstr::new(256);
+    //s = cstr::new(256);
+    buffer2 = cstr::new(256);
     screen();
    	putstr(&"\nsgash> ");
 	//drawstr(&"\nsgash> ");
@@ -258,7 +246,6 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             i +=1;
         }
         else {
-            drawstr(&"\n");
         	drawstr(&"\n");
             return true;
         }
@@ -267,6 +254,8 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
 }
 
 pub unsafe fn echo() -> bool{
+    drawstr(&"\n");
+    putstr(&"\n");
     let s = buffer.p as uint;
     let e = buffer.max;
     let mut i = 0;
@@ -298,8 +287,7 @@ impl cstr {
 
     pub unsafe fn new(size: uint) -> cstr {
         // Sometimes this doesn't allocate enough memory and gets stuck..
-
-        let (x,y) = memory::allocator.alloc(size);
+        let (x,y) = heap.alloc(size);
 
         let this = cstr {
             p: x,
@@ -326,6 +314,7 @@ impl cstr {
     unsafe fn add_char(&mut self, x: u8) -> bool{
         //putstr("1");
         if (self.p_cstr_i == self.max) { 
+            putstr("not able to add");
             return false; 
         }
         //putstr("2");
@@ -349,15 +338,15 @@ impl cstr {
         *(self.p as *mut char) = '\0';
     }
 
+    unsafe fn charAt(&self, n: u8) -> char {
+        ((*self.p)  + n) as char
+    }
+
     unsafe fn equals(&self, other: &str) -> bool {
+
     	// save val of self.p, which is u8, as a unit
     	let mut selfp: uint = self.p as uint;
     	// iterate through the str "other"
-        putstr(&"\nbuffer from inside equals: ");
-        putcstr(*self);
-        putstr(&"\nComparing to other: ");
-        putstr(other);
-        putstr(&"\n");
     	for c in slice::iter(as_bytes(other)){
     		// return false if any character does not match
     		if( *c != *(selfp as *u8) ) { 
@@ -366,19 +355,19 @@ impl cstr {
     		selfp += 1;
     	};
     	return true;
-    	*(selfp as *char) == '\0'
+    	//*(selfp as *char) == '\0'
     }
 
 	unsafe fn getarg(&self, delim: char, mut k: uint) -> Option<cstr> {
 		let mut ind: uint = 0;
 		let mut found = k == 0;
 		let mut selfp: uint = self.p as uint;
-		putstr(&"self from within getarg: ");
-        putcstr(*self);
-        let mut s = cstr::new(256);
+        s.reset();
 		loop {
 			if (*(selfp as *char) == '\0') { 
 				// End of string
+                //return a copy of s (write copy method)
+                // erased from next call
 				if (found) { return Some(s); }
 				else { return None; }
 			};
