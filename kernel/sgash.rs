@@ -26,15 +26,26 @@ pub static mut s: cstr = cstr {
                 max: 256
                   };
 
-pub static mut root: Treenode = Treenode {
-                    addr : 0 as *mut u8,
-                    val : None, 
-                    isFile : false,
-                    parent : None,
-                    next : None,
-                    prev : None,
-                    childrenHead : None,
-                    childrenTail : None,
+pub static mut numberString: cstr = cstr {
+    p: 0 as *mut u8,
+    p_cstr_i: 0,
+    max: 256
+};
+
+// pub static mut root: Treenode = Treenode {
+//                     addr : 0 as *mut u8,
+//                     val : None, 
+//                     isFile : false,
+//                     parent : None,
+//                     next : None,
+//                     prev : None,
+//                     childrenHead : None,
+//                     childrenTail : None,
+//                     };
+
+pub static mut root: TreeNode = TreeNode {
+                        start: 0 as *mut u8,
+                        end: 0
                     };
 
 pub fn putchar(key: char) {
@@ -115,6 +126,10 @@ pub unsafe fn parsekey(x: char) {
 	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH  && buffer.add_char(x) {
     		putchar(x as char);
     		drawchar(x as char);
+            //*(root.start) = 45 as u8;
+            //let aChar  = *(root.start);
+            //putchar(aChar as char);
+            //drawchar(aChar as char);
 	    }
 	}
     }
@@ -176,10 +191,153 @@ unsafe fn parse(){
                 putstr(&"\nwrite file");
                 drawstr(&"\nwrite file");
             }
+            if(a.equals(&"color")) {
+                putstr(&"\ncolors yayyyy");
+                drawstr(&"\ncolors yayyyy");
+                intToStr(15523);
+                putcstr(numberString);
+                //io::set_bg(52224);
+                //io::fill_bg();
+                // match buffer.getarg(' ', 1) {
+                //     Some(b) => {
+                //         let s = b.p as uint;
+                //         let mut i = 0;
+                //         let mut color : u32 = 0;
+                //         while i < 6 {
+                //             let first : u8 = *((s+i) as *mut u8);
+                //             let second : u8 = *((s+i) as *mut u8);
+                //             color  += getHexDigit(first as char,second as char);
+                //             if (i <= 4) {
+                //                 color *= 16;
+                //             }
+                //             i +=2;
+                //         }
+                //         putcstr(b);
+                //         io::set_cursor_color(color);
+                //         //io::fill_bg();
+                //     }
+                //     None => { }
+                // }
+            }
 	    }
 	    None => { }
 	};
 	buffer.reset();
+}
+
+unsafe fn getHexDigit(first : char, second : char) -> u32 {
+    let mut result : u32 = 0;
+    if (first as uint == '0' as uint) {
+        result += 0;    
+    } else if (first as uint == '1' as uint) {
+        result += 1;    
+    } if (first as uint == '2' as uint) {
+        result += 2;    
+    } if (first as uint == '3' as uint) {
+        result += 3;    
+    } if (first as uint == '4' as uint) {
+        result += 4;    
+    } if (first as uint == '5' as uint) {
+        result += 5;    
+    } if (first as uint == '6' as uint) {
+        result += 6;    
+    } if (first as uint == '7' as uint) {
+        result += 7;    
+    } if (first as uint == '8' as uint) {
+        result += 8;    
+    } if (first as uint == '9' as uint) {
+        result += 9;    
+    } if (first as uint == 'A' as uint) {
+        result += 10;    
+    } if (first as uint == 'B' as uint) {
+        result += 11;    
+    } if (first as uint == 'C' as uint) {
+        result += 12;    
+    } if (first as uint == 'D' as uint) {
+        result += 13;    
+    } if (first as uint == 'E' as uint) {
+        result += 14;    
+    } if (first as uint == 'F' as uint) {
+        result += 15;    
+    } 
+    result *= 16;
+    if (second as uint == '0' as uint) {
+        result += 0;    
+    } else if (second as uint == '1' as uint) {
+        result += 1;    
+    } if (second as uint == '2' as uint) {
+        result += 2;    
+    } if (second as uint == '3' as uint) {
+        result += 3;    
+    } if (second as uint == '4' as uint) {
+        result += 4;    
+    } if (second as uint == '5' as uint) {
+        result += 5;    
+    } if (second as uint == '6' as uint) {
+        result += 6;    
+    } if (second as uint == '7' as uint) {
+        result += 7;    
+    } if (second as uint == '8' as uint) {
+        result += 8;    
+    } if (second as uint == '9' as uint) {
+        result += 9;    
+    } if (second as uint == 'A' as uint) {
+        result += 10;    
+    } if (second as uint == 'B' as uint) {
+        result += 11;    
+    } if (second as uint == 'C' as uint) {
+        result += 12;    
+    } if (second as uint == 'D' as uint) {
+        result += 13;    
+    } if (second as uint == 'E' as uint) {
+        result += 14;    
+    } if (second as uint == 'F' as uint) {
+        result += 15;    
+    }     
+    return 0;
+}
+
+//this returns a backwards strings!!
+unsafe fn intToStr(mut number : uint) {
+    while (number >= 10) {
+        putstr("intostr while");
+        if (number % 0 == 0) {
+            putstr("mod 0");
+            numberString.add_char('0' as u8);
+        }
+        putstr("made it past 1 bitches");
+        if (number % 1 == 0) {
+            putstr("mod 0");
+            numberString.add_char('1' as u8);
+        } else if (number % 2 == 0) {
+            putstr("mod 0");
+            numberString.add_char('2' as u8);
+        } else if (number % 3 == 0) {
+            putstr("mod 0");
+            numberString.add_char('3' as u8);
+        } else if (number % 4 == 0) {
+            putstr("mod 0");
+            numberString.add_char('4' as u8);
+        } else if (number % 5 == 0) {
+            putstr("mod 0");
+            numberString.add_char('5' as u8);
+        } else if (number % 6 == 0) {
+            putstr("mod 0");
+            numberString.add_char('6' as u8);
+        } else if (number % 7 == 0) {
+            putstr("mod 0");
+            numberString.add_char('7' as u8);
+        } else if (number % 8 == 0) {
+            putstr("mod 0");
+            numberString.add_char('8' as u8);
+        } else if (number % 9 == 0) {
+            putstr("mod 0");
+            numberString.add_char('9' as u8);
+        }
+        putstr("dividing");
+        number /= 10;
+    }
+    putstr("out of intostr while");
 }
 
 fn screen() {
@@ -232,20 +390,26 @@ pub unsafe fn init() {
     //buffer2 = cstr::new(256);
     screen();
    	putstr(&"\nsgash> ");
+
 	//drawstr(&"\nsgash> ");
+
+
     let mut mainFile : cstr = cstr::new(256);
 
-    mainFile = from_str("SupremeBeing");
+    mainFile = from_str("Hello!");
 
-    root = Treenode::new(Some(mainFile), false, None, None, None, None, None);
-    match(root.getVal()) {
-        Some(a) => { 
-            putcstr(a); 
-            drawcstr(a);
-        }
-        None => { }
-    }
 
+    // root = Treenode::new(Some(mainFile), false, None, None, None, None, None);
+    // match(root.getVal()) {
+    //     Some(a) => { 
+    //         putcstr(a); 
+    //         drawcstr(a);
+    //     }
+    //     None => { }
+    // }
+
+    root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
+    //drawchar(*(root.start) as char);
 	buffer.reset();
 }
 
@@ -298,14 +462,13 @@ pub unsafe fn echo() -> bool{
     return false;
 }
 
-pub unsafe fn write_file(file: Treenode, string : cstr) {
 
-}
-
-pub unsafe fn create_file(name : cstr) {
-     let mut file : Treenode = Treenode::new(Some(name), true, Some(root), None, None, None, None);
-     //*cwd.children
-}
+// #[lang="exchange_free"]
+// pub unsafe fn create_file(name : cstr) {
+//      let mut file : Treenode = Treenode::new(Some(name), true, Some(~root), None, None, None, None);
+    
+//     //*cwd.children
+// }
 
 pub unsafe fn from_str(s: &str) -> cstr {
     let mut this = cstr::new(256);
@@ -315,39 +478,66 @@ pub unsafe fn from_str(s: &str) -> cstr {
     this
 }
 
-struct Treenode {
-    addr : *mut u8,
-    val : Option<cstr>,
-    isFile : bool,
-    parent : Option<Treenode>,
-    next : Option<Treenode>,
-    prev : Option<Treenode>,
-    childrenHead : Option<Treenode>,
-    childrenTail : Option<Treenode>,
-} 
+// struct Treenode {
+//     addr : *mut u8,
+//     val : Option<cstr>,
+//     isFile : bool,
+//     parent : Option<~Treenode>,
+//     next : Option<~Treenode>,
+//     prev : Option<~Treenode>,
+//     childrenHead : Option<~Treenode>,
+//     childrenTail : Option<~Treenode>,
+// } 
 
-impl Treenode {
-    pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<Treenode>, next1 : Option<Treenode>, prev1 : Option<Treenode>, childrenHead1 : Option<Treenode>, childrenTail1 : Option<Treenode>) -> Treenode {
-        let(x, y) = heap.alloc(262);
 
-        let this = Treenode {
-            addr : x,
-            isFile : file,
-            val : val1,
-            childrenHead : childrenHead1,
-            childrenTail: childrenTail1,
-            prev : prev1,
-            next : next1,
-            parent : parent1
+
+// impl Treenode {
+//     pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<~Treenode>, next1 : Option<~Treenode>, prev1 : Option<~Treenode>, childrenHead1 : Option<~Treenode>, childrenTail1 : Option<~Treenode>) -> Treenode {
+//         let(x, y) = heap.alloc(262);
+
+//         let this = Treenode {
+//             addr : x,
+//             isFile : file,
+//             val : val1,
+//             childrenHead : childrenHead1,
+//             childrenTail: childrenTail1,
+//             prev : prev1,
+//             next : next1,
+//             parent : parent1
+//         };
+//         this
+//     }
+
+//     unsafe fn getVal(&self) -> Option<cstr> {
+//         match(self.val) {
+//             Some(a) => { return Some(a); }
+//             None => { return None; }
+//         }
+//     }
+// }
+
+struct TreeNode {
+    start: *mut u8,
+    end: uint
+}
+
+impl TreeNode {
+    pub unsafe fn new(value : u8, file: u8, parent : u8, next : u8, prev : u8, childrenHead : u8, childrenTail : u8) -> TreeNode { 
+        let(x,y) = heap.alloc(7);
+
+        let this = TreeNode {
+            start: x,
+            end: y
         };
-        this
-    }
 
-    unsafe fn getVal(&self) -> Option<cstr> {
-        match(self.val) {
-            Some(a) => { return Some(a); }
-            None => { return None; }
-        }
+        *(x) = value;
+        *(((x as uint) +1) as *mut u8) = file;
+        *(((x as uint) +2) as *mut u8) = parent;
+        *(((x as uint) +3) as *mut u8) = next;
+        *(((x as uint) +4) as *mut u8) = prev;
+        *(((x as uint) +5) as *mut u8) = childrenHead;
+        *(((x as uint) +6) as *mut u8) = childrenTail;
+        this
     }
 }
 

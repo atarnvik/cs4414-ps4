@@ -21,7 +21,7 @@ pub static CURSOR_WIDTH: u32 = 8;
 // Colors have their own setters
 pub static mut CURSOR_COLOR: u32 = 0x00000000;
 pub static mut FG_COLOR: u32 = 0x00000000;
-pub static mut BG_COLOR: u32 = 0x00000000;
+pub static mut BG_COLOR: u32 = 0x000099FF;
 pub static mut CURSOR_BUFFER: [u32, ..8*16] = [0x00FF0000, ..8*16];
 pub static mut SAVE_X: u32 = 0;
 pub static mut SAVE_Y: u32 = 0;
