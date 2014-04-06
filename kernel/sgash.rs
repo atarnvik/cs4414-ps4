@@ -13,18 +13,19 @@ use kernel::memory::Bitv;
 use kernel::memory::BitvStorage;
 use kernel::memory::Alloc;
 use kernel::memory;
+use kernel::fs::*;
 
 pub static mut buffer: cstr = cstr {
-				p: 0 as *mut u8,
-				p_cstr_i: 0,
-				max: 0
-			      };
+	p: 0 as *mut u8,
+	p_cstr_i: 0,
+	max: 0
+};
 
 pub static mut s: cstr = cstr {
-                p: 0 as *mut u8,
-                p_cstr_i: 0,
-                max: 256
-                  };
+	p: 0 as *mut u8,
+	p_cstr_i: 0,
+	max: 256
+};
 
 pub static mut numberString: cstr = cstr {
     p: 0 as *mut u8,
@@ -44,9 +45,9 @@ pub static mut numberString: cstr = cstr {
 //                     };
 
 pub static mut root: TreeNode = TreeNode {
-                        start: 0 as *mut u8,
-                        end: 0
-                    };
+	start: 0 as *mut u8,
+	end: 0
+};
 
 pub fn putchar(key: char) {
     unsafe {
@@ -58,8 +59,6 @@ pub fn putchar(key: char) {
 	io::write_char(key, io::UART0);
     }
 }
-
-
 
 fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
@@ -129,9 +128,9 @@ pub unsafe fn parsekey(x: char) {
     		putchar(x as char);
     		drawchar(x as char);
             //*(root.start) = 45 as u8;
-            //let aChar  = *(root.start);
-            //putchar(aChar as char);
-            //drawchar(aChar as char);
+            // let aChar  = *(root.start);
+            // putchar(aChar as char);
+            // drawchar(aChar as char);
 	    }
 	}
     }
@@ -270,8 +269,9 @@ pub unsafe fn init() {
 
 
     let mut mainFile : cstr = cstr::new(256);
-
-    mainFile = from_str("Hello!");
+    mainFile = from_str("Hello");
+    let mut mfContents : cstr = cstr::new(256);
+    mfContents = from_str("I'm inside the system!!!");
 
 
     // root = Treenode::new(Some(mainFile), false, None, None, None, None, None);
@@ -282,8 +282,8 @@ pub unsafe fn init() {
     //     }
     //     None => { }
     // }
-
-    root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
+    let matt = node::new(mainFile, None, mfContents, false);
+    // root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
     //drawchar(*(root.start) as char);
 	buffer.reset();
 }
@@ -435,11 +435,6 @@ impl cstr {
         };
         *(((this.p as uint)+this.p_cstr_i) as *mut char) = '\0';
         this
-    }
-
-    #[allow(dead_code)]
-    fn len(&self) -> uint { 
-        self.p_cstr_i 
     }
 
     unsafe fn add_char(&mut self, x: u8) -> bool{
