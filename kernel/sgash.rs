@@ -33,6 +33,8 @@ pub static mut numberString: cstr = cstr {
     max: 256
 };
 
+pub static mut count: uint = 0;
+
 // pub static mut root: Treenode = Treenode {
 //                     addr : 0 as *mut u8,
 //                     val : None, 
@@ -432,8 +434,12 @@ impl cstr {
         // Sometimes this doesn't allocate enough memory and gets stuck..
         let (x,y) = heap.alloc(size);
 
+        let temp = ((x as uint) + 256 * count) as *mut u8;
+
+        count = count + 1;
+
         let this = cstr {
-            p: x,
+            p: temp,
             p_cstr_i: 0,
             max: y
         };
