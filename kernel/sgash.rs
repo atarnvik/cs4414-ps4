@@ -256,12 +256,8 @@ fn screen() {
 
 pub unsafe fn init() {
 	buffer = cstr::new(256);
-    //s = cstr::new(256);
-    //buffer2 = cstr::new(256);
     screen();
    	putstr(&"\nsgash> ");
-
-	//drawstr(&"\nsgash> ");
 
     let mainFile = from_str("Hello");
     let mfContents = from_str("I'm inside the system!!!");
@@ -270,21 +266,13 @@ pub unsafe fn init() {
     putcstr(root.name);
     putstr(&"\n");
 
-    // let matt2 = fs::DirNode::new(from_str("hello1"));
-    // putcstr(matt2.name);
-    // putstr(&"\n");
-
-    // let matt3 = fs::DirNode::new(from_str("hello2"));
-    // putcstr(matt3.name);
-    // putstr(&"\n");
-
-    pwd = &mut root;
+    pwd = &mut root as *mut DirNode;
     putstr(&"PWD: ");
     putcstr((*pwd).name);
     (*pwd).name = from_str("hello3");
-    putstr(&"\n");
+    putstr(&"\nRoot: ");
     putcstr(root.name);
-    putstr(&"PWD: ");
+    putstr(&"\nPWD: ");
     putcstr((*pwd).name);
     putstr(&"\n");
 

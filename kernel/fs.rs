@@ -7,26 +7,10 @@ use kernel::vec::Vec;
 use super::super::platform::*;
 use kernel::sgash;
 
-// pub struct FileSystem {
-//     root : Option<DirNode>,
-//     cwd : Option<*mut DirNode>,
-// }
-
-// impl FileSystem {
-//     pub unsafe fn new() -> FileSystem {
-//         let this = FileSystem {
-//             root : DirNode::new(from_str("Root"));
-//             pwd : Some(&mut root);
-//         }
-//     }
-// }
-
 pub struct DirNode {
     name: sgash::cstr,
     parent: *mut DirNode,
-    //contents: sgash::cstr,
     dchildren: *mut Vec<*mut DirNode>,
-    //next : *Vec<,
     fchildren : *mut Vec<*mut FileNode>,
 }
  
@@ -35,8 +19,6 @@ impl DirNode {
         let this = DirNode {
             name: file_name,
             parent: dad,
-
-            //next : &Vec::new(),
 
             dchildren: &mut Vec::new(),
             fchildren : &mut Vec::new(),
@@ -56,25 +38,23 @@ impl DirNode {
     }
 
     pub unsafe fn add_file(&mut self, d : sgash::cstr, contents : sgash::cstr) {
-        let newNode : *mut FileNode = &mut FileNode::new(d, contents); 
+        let newNode : *mut FileNode = &mut FileNode::new(d, self, contents); 
        (*self.fchildren).push(newNode);
     }
 }
  
 pub struct FileNode {
     name: sgash::cstr,
-    //parent: Option<*DirNode>,
+    parent: *mut DirNode,
     contents: sgash::cstr,
-    //next: Option<*mut FileNode>,
 }
 
 impl FileNode {
-    pub unsafe fn new (file_name: sgash::cstr/*, dad: Option<*DirNode>*/, words: sgash::cstr) -> FileNode {
+    pub unsafe fn new (file_name: sgash::cstr, dad: *mut DirNode, words: sgash::cstr) -> FileNode {
         let this = FileNode {
             name: file_name,
-            //parent: dad,
+            parent: dad,
             contents: words,
-            //next : None,
         };
         this
     }
