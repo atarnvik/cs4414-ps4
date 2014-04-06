@@ -16,7 +16,7 @@ pub mod ptr;
 pub mod memory;
 pub mod sgash;
 pub mod fs;
-//pub mod vec;
+pub mod vec;
 //pub mod heap;
 //pub mod cstr;
 

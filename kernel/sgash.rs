@@ -34,8 +34,10 @@ pub static mut numberString: cstr = cstr {
 };
 
 pub static mut count: uint = 0;
+pub static mut root : ~fs::DirNode = ~fs::DirNode::new(from_str("Root"));
+pub static mut pwd : *mut fs::DirNode = &root;
 
-// pub static mut root: Treenode = Treenode {
+// pub static mut root: TreeDirNode = TreeDirNode {
 //                     addr : 0 as *mut u8,
 //                     val : None, 
 //                     isFile : false,
@@ -46,10 +48,10 @@ pub static mut count: uint = 0;
 //                     childrenTail : None,
 //                     };
 
-pub static mut root: TreeNode = TreeNode {
-	start: 0 as *mut u8,
-	end: 0
-};
+// pub static mut root: TreeNode = TreeNode {
+// 	start: 0 as *mut u8,
+// 	end: 0
+// };
 
 pub fn putchar(key: char) {
     unsafe {
@@ -270,50 +272,38 @@ pub unsafe fn init() {
 	//drawstr(&"\nsgash> ");
 
     let mainFile = from_str("Hello");
-    putcstr(mainFile);
-    putstr(&"\n");
-    let mut mfContents : cstr = cstr::new(256);
-    mfContents = from_str("I'm inside the system!!!");
+    let mfContents = from_str("I'm inside the system!!!");
 
-
-    // root = Treenode::new(Some(mainFile), false, None, None, None, None, None);
-    // match(root.getVal()) {
-    //     Some(a) => { 
-    //         putcstr(a); 
-    //         drawcstr(a);
-    //     }
-    //     None => { }
-    // }
-    let matt = fs::node::new(mainFile, None, mfContents);
-    putcstr(matt.name);
-    putstr(&"\n");
-    putcstr(matt.contents);
+    putcstr(root.name);
     putstr(&"\n");
 
-    let matt2 = fs::node::new(from_str("hello1"), None, from_str("something"));
+    let matt2 = fs::DirNode::new(from_str("hello1"));
     putcstr(matt2.name);
     putstr(&"\n");
-    putcstr(matt2.contents);
-    putstr(&"\n");
 
-    let matt3 = fs::node::new(from_str("hello2"), None, from_str("something"));
+    let matt3 = fs::DirNode::new(from_str("hello2"));
     putcstr(matt3.name);
     putstr(&"\n");
-    putcstr(matt3.contents);
-    putstr(&"\n");
 
-    let mut pwd = matt;
+    //pwd = &mut root;
     putstr(&"PWD: ");
-    putcstr(pwd.name);
+    putcstr((*pwd).name);
+    (*pwd).name = from_str("hello3");
+    //matt.name = pwd.name;
+    putstr(&"\n");
+    putcstr(root.name);
+    putstr(&"PWD: ");
+    putcstr((*pwd).name);
     putstr(&"\n");
 
-    let file = fs::FileNode::new(mainFile, None, mfContents);
+    //let file = fs::FileNode::new(mainFile, mfContents);
     //putcstr(file.name);
     //putstr(&"\n");
     // putcstr(file.read_file());
     // putstr(&"\n");
     // root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
     //drawchar(*(root.start) as char);
+
 	buffer.reset();
 }
 
@@ -369,7 +359,7 @@ pub unsafe fn echo() -> bool{
 
 // #[lang="exchange_free"]
 // pub unsafe fn create_file(name : cstr) {
-//      let mut file : Treenode = Treenode::new(Some(name), true, Some(~root), None, None, None, None);
+//      let mut file : TreeDirNode = TreeDirNode::new(Some(name), true, Some(~root), None, None, None, None);
     
 //     //*cwd.children
 // }
@@ -382,24 +372,24 @@ pub unsafe fn from_str(s: &str) -> cstr {
     this
 }
 
-// struct Treenode {
+// struct TreeDirNode {
 //     addr : *mut u8,
 //     val : Option<cstr>,
 //     isFile : bool,
-//     parent : Option<~Treenode>,
-//     next : Option<~Treenode>,
-//     prev : Option<~Treenode>,
-//     childrenHead : Option<~Treenode>,
-//     childrenTail : Option<~Treenode>,
+//     parent : Option<~TreeDirNode>,
+//     next : Option<~TreeDirNode>,
+//     prev : Option<~TreeDirNode>,
+//     childrenHead : Option<~TreeDirNode>,
+//     childrenTail : Option<~TreeDirNode>,
 // } 
 
 
 
-// impl Treenode {
-//     pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<~Treenode>, next1 : Option<~Treenode>, prev1 : Option<~Treenode>, childrenHead1 : Option<~Treenode>, childrenTail1 : Option<~Treenode>) -> Treenode {
+// impl TreeDirNode {
+//     pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<~TreeDirNode>, next1 : Option<~TreeDirNode>, prev1 : Option<~TreeDirNode>, childrenHead1 : Option<~TreeDirNode>, childrenTail1 : Option<~TreeDirNode>) -> TreeDirNode {
 //         let(x, y) = heap.alloc(262);
 
-//         let this = Treenode {
+//         let this = TreeDirNode {
 //             addr : x,
 //             isFile : file,
 //             val : val1,

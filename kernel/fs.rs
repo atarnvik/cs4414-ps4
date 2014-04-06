@@ -3,30 +3,29 @@ use core::*;
 use core::str::*;
 use core::option::{Some, Option, None}; // Match statement
 use core::iter::Iterator;
-//use kernel::vec::Vec;
+use kernel::vec::Vec;
 use super::super::platform::*;
 use kernel::sgash;
 
 pub struct DirNode {
     name: sgash::cstr,
-    parent: Option<*node>,
-    contents: sgash::cstr,
-    dchildren: Option<*mut node>,
-    next : Option<*mut node>,
-    fchildren : Option<*mut FileNode>,
+    //parent: Option<*DirNode>,
+    //contents: sgash::cstr,
+    dchildren: *mut Vec<*mut DirNode>,
+    //next : *Vec<,
+    fchildren : *mut Vec<*mut FileNode>,
 }
  
 impl DirNode {
-    pub unsafe fn new(file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr) -> node {
-        let this = node {
+    pub unsafe fn new(file_name: sgash::cstr/*, dad: Option<*DirNode>*/) -> DirNode {
+        let this = DirNode {
             name: file_name,
-            parent: dad,
-            contents: words,
+            //parent: dad,
 
-            next : None,
+            //next : &Vec::new(),
 
-            dchildren: None,
-            fchildren : None,
+            dchildren: &mut Vec::new(),
+            fchildren : &mut Vec::new(),
         };
         this
     }
@@ -37,25 +36,31 @@ impl DirNode {
     //     }
     // }
  
-    pub unsafe fn add_dir(&mut self, d : &mut node) { 
-       (*self.children).push(*d);
+    pub unsafe fn add_dir(&mut self, d : sgash::cstr) {
+        let newNode : *mut DirNode = &mut DirNode::new(d); 
+       (*self.dchildren).push(newNode);
+    }
+
+    pub unsafe fn add_file(&mut self, d : sgash::cstr, contents : sgash::cstr) {
+        let newNode : *mut FileNode = &mut FileNode::new(d, contents); 
+       (*self.fchildren).push(newNode);
     }
 }
  
 pub struct FileNode {
     name: sgash::cstr,
-    parent: Option<*node>,
+    //parent: Option<*DirNode>,
     contents: sgash::cstr,
-    next: Option<*mut FileNode>,
+    //next: Option<*mut FileNode>,
 }
 
 impl FileNode {
-    pub unsafe fn new (file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr) -> FileNode {
+    pub unsafe fn new (file_name: sgash::cstr/*, dad: Option<*DirNode>*/, words: sgash::cstr) -> FileNode {
         let this = FileNode {
             name: file_name,
-            parent: dad,
+            //parent: dad,
             contents: words,
-            next : None,
+            //next : None,
         };
         this
     }
