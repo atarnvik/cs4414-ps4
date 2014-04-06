@@ -176,25 +176,27 @@ impl BuddyAlloc {
                 UNUSED => return,
                 USED => 
                 loop {
+                    //base case - top of tree
                     if index == 0 {
-                        self.tree.set(0, UNUSED);
+                        self.tree.set(index, UNUSED);
                         return;
                     }
-
+                    //otherwise, find buddy (account for finding first OR second buddy)
                     let buddy = index - 1 + (index & 1) * 2;
                     match self.tree.get(buddy) {
-                        UNUSED => {}
-                        _ => {
+                        UNUSED => {} // buddy isn't used - keep moving up (parent combined)
+                        _ => {  // any other case - set current index to unused
                             self.tree.set(index, UNUSED);
                             loop {
-                                let parent = (index + 1) / 2 - 1; // parent
-                                match self.tree.get(parent) {
-                                    FULL if index > 0 => {
+                                let parent = (index + 1) / 2 - 1; // parent because of integer division
+                                match (self.tree.get(parent), index > 0) {
+                                    (FULL, true) => {
+                                        // if parent was full, mark it as split (because only one child block is being used)
                                         self.tree.set(parent, SPLIT);
                                     }
-                                    _ => return
+                                    (_, _) => return
                                 }
-                                index = parent;
+                                index = parent;                 // move up the tree
                             }
                         }
                     }
