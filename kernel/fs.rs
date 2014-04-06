@@ -7,9 +7,23 @@ use kernel::vec::Vec;
 use super::super::platform::*;
 use kernel::sgash;
 
+// pub struct FileSystem {
+//     root : Option<DirNode>,
+//     cwd : Option<*mut DirNode>,
+// }
+
+// impl FileSystem {
+//     pub unsafe fn new() -> FileSystem {
+//         let this = FileSystem {
+//             root : DirNode::new(from_str("Root"));
+//             pwd : Some(&mut root);
+//         }
+//     }
+// }
+
 pub struct DirNode {
     name: sgash::cstr,
-    //parent: Option<*DirNode>,
+    parent: *mut DirNode,
     //contents: sgash::cstr,
     dchildren: *mut Vec<*mut DirNode>,
     //next : *Vec<,
@@ -17,10 +31,10 @@ pub struct DirNode {
 }
  
 impl DirNode {
-    pub unsafe fn new(file_name: sgash::cstr/*, dad: Option<*DirNode>*/) -> DirNode {
+    pub unsafe fn new(file_name: sgash::cstr, dad: *mut DirNode) -> DirNode {
         let this = DirNode {
             name: file_name,
-            //parent: dad,
+            parent: dad,
 
             //next : &Vec::new(),
 
@@ -37,7 +51,7 @@ impl DirNode {
     // }
  
     pub unsafe fn add_dir(&mut self, d : sgash::cstr) {
-        let newNode : *mut DirNode = &mut DirNode::new(d); 
+        let newNode : *mut DirNode = &mut DirNode::new(d, self); 
        (*self.dchildren).push(newNode);
     }
 

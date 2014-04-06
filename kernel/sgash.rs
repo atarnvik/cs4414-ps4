@@ -6,6 +6,7 @@ use core::str::*;
 use core::option::{Some, Option, None}; 
 use core::iter::Iterator;
 use kernel::*;
+use kernel::vec::Vec;
 use super::super::platform::*;
 use kernel::memory::Allocator;
 use kernel::memory::BuddyAlloc;
@@ -14,6 +15,8 @@ use kernel::memory::BitvStorage;
 use kernel::memory::Alloc;
 use kernel::memory;
 use kernel::fs;
+use kernel::fs::FileNode;
+use kernel::fs::DirNode;
 
 pub static mut buffer: cstr = cstr {
 	p: 0 as *mut u8,
@@ -34,24 +37,18 @@ pub static mut numberString: cstr = cstr {
 };
 
 pub static mut count: uint = 0;
-pub static mut root : ~fs::DirNode = ~fs::DirNode::new(from_str("Root"));
-pub static mut pwd : *mut fs::DirNode = &root;
 
-// pub static mut root: TreeDirNode = TreeDirNode {
-//                     addr : 0 as *mut u8,
-//                     val : None, 
-//                     isFile : false,
-//                     parent : None,
-//                     next : None,
-//                     prev : None,
-//                     childrenHead : None,
-//                     childrenTail : None,
-//                     };
-
-// pub static mut root: TreeNode = TreeNode {
-// 	start: 0 as *mut u8,
-// 	end: 0
-// };
+pub static mut root : DirNode = DirNode {
+    name : cstr {
+        p: 0 as *mut u8,
+        p_cstr_i: 0,
+        max: 256
+    },
+    dchildren : '\0' as *mut Vec<*mut DirNode>,
+    fchildren : '\0' as *mut Vec<*mut FileNode>,
+    parent : '\0' as *mut DirNode,
+};
+pub static mut pwd : *mut DirNode = '\0' as *mut DirNode;
 
 pub fn putchar(key: char) {
     unsafe {
@@ -131,10 +128,6 @@ pub unsafe fn parsekey(x: char) {
 	    if io::CURSOR_X < io::SCREEN_WIDTH-io::CURSOR_WIDTH  && buffer.add_char(x) {
     		putchar(x as char);
     		drawchar(x as char);
-            //*(root.start) = 45 as u8;
-            // let aChar  = *(root.start);
-            // putchar(aChar as char);
-            // drawchar(aChar as char);
 	    }
 	}
     }
@@ -142,7 +135,6 @@ pub unsafe fn parsekey(x: char) {
 
 unsafe fn parse(){
 	// cd, rm, mkdir, pwd
-    //putstr(&"\n\n\n");
 	match buffer.getarg(' ', 0) {
 	    Some(a) => {
 	    	if(a.equals(&"echo")) {
@@ -274,22 +266,22 @@ pub unsafe fn init() {
     let mainFile = from_str("Hello");
     let mfContents = from_str("I'm inside the system!!!");
 
+    root = fs::DirNode::new(from_str("Root"), '\0' as *mut DirNode);
     putcstr(root.name);
     putstr(&"\n");
 
-    let matt2 = fs::DirNode::new(from_str("hello1"));
-    putcstr(matt2.name);
-    putstr(&"\n");
+    // let matt2 = fs::DirNode::new(from_str("hello1"));
+    // putcstr(matt2.name);
+    // putstr(&"\n");
 
-    let matt3 = fs::DirNode::new(from_str("hello2"));
-    putcstr(matt3.name);
-    putstr(&"\n");
+    // let matt3 = fs::DirNode::new(from_str("hello2"));
+    // putcstr(matt3.name);
+    // putstr(&"\n");
 
-    //pwd = &mut root;
+    pwd = &mut root;
     putstr(&"PWD: ");
     putcstr((*pwd).name);
     (*pwd).name = from_str("hello3");
-    //matt.name = pwd.name;
     putstr(&"\n");
     putcstr(root.name);
     putstr(&"PWD: ");
@@ -300,9 +292,6 @@ pub unsafe fn init() {
     //putcstr(file.name);
     //putstr(&"\n");
     // putcstr(file.read_file());
-    // putstr(&"\n");
-    // root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
-    //drawchar(*(root.start) as char);
 
 	buffer.reset();
 }
@@ -321,7 +310,6 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
     let e = string.max;
     let mut i = 0;
     while i < e {
-        //putstr(&"inside while");
         let theChar : u8 = *((s+i) as *mut u8);
         if(theChar as char != '\0') {
             drawchar(theChar as char);
@@ -356,83 +344,12 @@ pub unsafe fn echo() -> bool{
     return false;
 }
 
-
-// #[lang="exchange_free"]
-// pub unsafe fn create_file(name : cstr) {
-//      let mut file : TreeDirNode = TreeDirNode::new(Some(name), true, Some(~root), None, None, None, None);
-    
-//     //*cwd.children
-// }
-
 pub unsafe fn from_str(s: &str) -> cstr {
     let mut this = cstr::new(256);
     for c in slice::iter(as_bytes(s)) {
         this.add_char(*c);
     };
     this
-}
-
-// struct TreeDirNode {
-//     addr : *mut u8,
-//     val : Option<cstr>,
-//     isFile : bool,
-//     parent : Option<~TreeDirNode>,
-//     next : Option<~TreeDirNode>,
-//     prev : Option<~TreeDirNode>,
-//     childrenHead : Option<~TreeDirNode>,
-//     childrenTail : Option<~TreeDirNode>,
-// } 
-
-
-
-// impl TreeDirNode {
-//     pub unsafe fn new(val1 : Option<cstr>, file : bool, parent1 : Option<~TreeDirNode>, next1 : Option<~TreeDirNode>, prev1 : Option<~TreeDirNode>, childrenHead1 : Option<~TreeDirNode>, childrenTail1 : Option<~TreeDirNode>) -> TreeDirNode {
-//         let(x, y) = heap.alloc(262);
-
-//         let this = TreeDirNode {
-//             addr : x,
-//             isFile : file,
-//             val : val1,
-//             childrenHead : childrenHead1,
-//             childrenTail: childrenTail1,
-//             prev : prev1,
-//             next : next1,
-//             parent : parent1
-//         };
-//         this
-//     }
-
-//     unsafe fn getVal(&self) -> Option<cstr> {
-//         match(self.val) {
-//             Some(a) => { return Some(a); }
-//             None => { return None; }
-//         }
-//     }
-// }
-
-struct TreeNode {
-    start: *mut u8,
-    end: uint
-}
-
-impl TreeNode {
-    pub unsafe fn new(value : u8, file: u8, parent : u8, next : u8, prev : u8, childrenHead : u8, childrenTail : u8) -> TreeNode { 
-        let(x,y) = heap.alloc(7);
-
-        let this = TreeNode {
-            start: x,
-            end: y
-        };
-
-        *(x) = value;
-        *(((x as uint) +1) as *mut u8) = file;
-        *(((x as uint) +2) as *mut u8) = parent;
-        *(((x as uint) +3) as *mut u8) = next;
-        *(((x as uint) +4) as *mut u8) = prev;
-        *(((x as uint) +5) as *mut u8) = childrenHead;
-        *(((x as uint) +6) as *mut u8) = childrenTail;
-        this
-    }
 }
 
 pub struct cstr {
