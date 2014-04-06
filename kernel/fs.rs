@@ -7,31 +7,39 @@ use core::iter::Iterator;
 use super::super::platform::*;
 use kernel::sgash;
 
-pub struct node {
+pub struct DirNode {
     name: sgash::cstr,
     parent: Option<*node>,
     contents: sgash::cstr,
-    isDir: bool,
     dchildren: Option<*mut node>,
+    next : Option<*mut node>,
     fchildren : Option<*mut FileNode>,
 }
  
-impl node {
-    pub unsafe fn new(file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr, dir: bool) -> node {
+impl DirNode {
+    pub unsafe fn new(file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr) -> node {
         let this = node {
             name: file_name,
             parent: dad,
             contents: words,
-            isDir: dir,
+
+            next : None,
+
             dchildren: None,
             fchildren : None,
         };
         this
     }
- 
-    // pub unsafe fn add_node(&mut self, d : &mut node) { 
-    //    (*self.children).push(*d);
+
+    // pub unsafe fn list_directory (&mut self, dir : sgash::cstr) {
+    //     if(dir.equals(self.name)) {
+
+    //     }
     // }
+ 
+    pub unsafe fn add_dir(&mut self, d : &mut node) { 
+       (*self.children).push(*d);
+    }
 }
  
 pub struct FileNode {
@@ -51,13 +59,23 @@ impl FileNode {
         };
         this
     }
+
+    pub unsafe fn getName(&self) -> sgash::cstr {
+        self.name
+    }
+
+    //cat <file>
+    pub fn read_file(&self) -> sgash::cstr {
+        self.contents
+    }
+
+    // wr
+    pub fn write_file(&self, string : sgash::cstr) {
+
+    }
 }
 
-// cat <file>
-// pub fn read_file(file){}
 
-// // wr
-// pub fn write_file(file, string){}
 
 // // touch
 // pub fn create_file(directory, name){}

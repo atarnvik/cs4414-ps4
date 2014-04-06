@@ -284,11 +284,34 @@ pub unsafe fn init() {
     //     }
     //     None => { }
     // }
-    let matt = fs::node::new(mainFile, None, mfContents, false);
+    let matt = fs::node::new(mainFile, None, mfContents);
     putcstr(matt.name);
     putstr(&"\n");
     putcstr(matt.contents);
     putstr(&"\n");
+
+    let matt2 = fs::node::new(from_str("hello1"), None, from_str("something"));
+    putcstr(matt2.name);
+    putstr(&"\n");
+    putcstr(matt2.contents);
+    putstr(&"\n");
+
+    let matt3 = fs::node::new(from_str("hello2"), None, from_str("something"));
+    putcstr(matt3.name);
+    putstr(&"\n");
+    putcstr(matt3.contents);
+    putstr(&"\n");
+
+    let mut pwd = matt;
+    putstr(&"PWD: ");
+    putcstr(pwd.name);
+    putstr(&"\n");
+
+    let file = fs::FileNode::new(mainFile, None, mfContents);
+    //putcstr(file.name);
+    //putstr(&"\n");
+    // putcstr(file.read_file());
+    // putstr(&"\n");
     // root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
     //drawchar(*(root.start) as char);
 	buffer.reset();
@@ -493,6 +516,10 @@ impl cstr {
     	return true;
     	//*(selfp as *char) == '\0'
     }
+
+    // unsafe fn equals(&self, other: cstr) -> bool {
+    //     if(self. )
+    // }
 
 	unsafe fn getarg(&self, delim: char, mut k: uint) -> Option<cstr> {
 		let mut ind: uint = 0;
