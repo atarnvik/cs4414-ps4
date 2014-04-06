@@ -59,6 +59,8 @@ pub fn putchar(key: char) {
     }
 }
 
+
+
 fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
 	   putchar(*c as char);
@@ -191,153 +193,26 @@ unsafe fn parse(){
                 putstr(&"\nwrite file");
                 drawstr(&"\nwrite file");
             }
-            if(a.equals(&"color")) {
-                putstr(&"\ncolors yayyyy");
-                drawstr(&"\ncolors yayyyy");
-                intToStr(15523);
-                putcstr(numberString);
-                //io::set_bg(52224);
-                //io::fill_bg();
-                // match buffer.getarg(' ', 1) {
-                //     Some(b) => {
-                //         let s = b.p as uint;
-                //         let mut i = 0;
-                //         let mut color : u32 = 0;
-                //         while i < 6 {
-                //             let first : u8 = *((s+i) as *mut u8);
-                //             let second : u8 = *((s+i) as *mut u8);
-                //             color  += getHexDigit(first as char,second as char);
-                //             if (i <= 4) {
-                //                 color *= 16;
-                //             }
-                //             i +=2;
-                //         }
-                //         putcstr(b);
-                //         io::set_cursor_color(color);
-                //         //io::fill_bg();
-                //     }
-                //     None => { }
-                // }
+            if(a.equals(&"highlight")) {
+            	match buffer.getarg(' ', 1){
+					Some(b) =>{
+						if(b.equals("on")){
+							io::set_bg(0x33ffff);
+						}
+						if(b.equals("off")){
+							io::set_bg(0x660000);
+						}
+					}
+					None => {}
+				};
+            }
+            if(a.equals(&"clear")){
+            	io::restart();
             }
 	    }
 	    None => { }
 	};
 	buffer.reset();
-}
-
-unsafe fn getHexDigit(first : char, second : char) -> u32 {
-    let mut result : u32 = 0;
-    if (first as uint == '0' as uint) {
-        result += 0;    
-    } else if (first as uint == '1' as uint) {
-        result += 1;    
-    } if (first as uint == '2' as uint) {
-        result += 2;    
-    } if (first as uint == '3' as uint) {
-        result += 3;    
-    } if (first as uint == '4' as uint) {
-        result += 4;    
-    } if (first as uint == '5' as uint) {
-        result += 5;    
-    } if (first as uint == '6' as uint) {
-        result += 6;    
-    } if (first as uint == '7' as uint) {
-        result += 7;    
-    } if (first as uint == '8' as uint) {
-        result += 8;    
-    } if (first as uint == '9' as uint) {
-        result += 9;    
-    } if (first as uint == 'A' as uint) {
-        result += 10;    
-    } if (first as uint == 'B' as uint) {
-        result += 11;    
-    } if (first as uint == 'C' as uint) {
-        result += 12;    
-    } if (first as uint == 'D' as uint) {
-        result += 13;    
-    } if (first as uint == 'E' as uint) {
-        result += 14;    
-    } if (first as uint == 'F' as uint) {
-        result += 15;    
-    } 
-    result *= 16;
-    if (second as uint == '0' as uint) {
-        result += 0;    
-    } else if (second as uint == '1' as uint) {
-        result += 1;    
-    } if (second as uint == '2' as uint) {
-        result += 2;    
-    } if (second as uint == '3' as uint) {
-        result += 3;    
-    } if (second as uint == '4' as uint) {
-        result += 4;    
-    } if (second as uint == '5' as uint) {
-        result += 5;    
-    } if (second as uint == '6' as uint) {
-        result += 6;    
-    } if (second as uint == '7' as uint) {
-        result += 7;    
-    } if (second as uint == '8' as uint) {
-        result += 8;    
-    } if (second as uint == '9' as uint) {
-        result += 9;    
-    } if (second as uint == 'A' as uint) {
-        result += 10;    
-    } if (second as uint == 'B' as uint) {
-        result += 11;    
-    } if (second as uint == 'C' as uint) {
-        result += 12;    
-    } if (second as uint == 'D' as uint) {
-        result += 13;    
-    } if (second as uint == 'E' as uint) {
-        result += 14;    
-    } if (second as uint == 'F' as uint) {
-        result += 15;    
-    }     
-    return 0;
-}
-
-//this returns a backwards strings!!
-unsafe fn intToStr(mut number : uint) {
-    while (number >= 10) {
-        putstr("intostr while");
-        if (number % 0 == 0) {
-            putstr("mod 0");
-            numberString.add_char('0' as u8);
-        }
-        putstr("made it past 1 bitches");
-        if (number % 1 == 0) {
-            putstr("mod 0");
-            numberString.add_char('1' as u8);
-        } else if (number % 2 == 0) {
-            putstr("mod 0");
-            numberString.add_char('2' as u8);
-        } else if (number % 3 == 0) {
-            putstr("mod 0");
-            numberString.add_char('3' as u8);
-        } else if (number % 4 == 0) {
-            putstr("mod 0");
-            numberString.add_char('4' as u8);
-        } else if (number % 5 == 0) {
-            putstr("mod 0");
-            numberString.add_char('5' as u8);
-        } else if (number % 6 == 0) {
-            putstr("mod 0");
-            numberString.add_char('6' as u8);
-        } else if (number % 7 == 0) {
-            putstr("mod 0");
-            numberString.add_char('7' as u8);
-        } else if (number % 8 == 0) {
-            putstr("mod 0");
-            numberString.add_char('8' as u8);
-        } else if (number % 9 == 0) {
-            putstr("mod 0");
-            numberString.add_char('9' as u8);
-        }
-        putstr("dividing");
-        number /= 10;
-    }
-    putstr("out of intostr while");
 }
 
 fn screen() {

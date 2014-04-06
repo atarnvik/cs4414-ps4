@@ -99,6 +99,14 @@ pub unsafe fn scrollup()
     CURSOR_X = 0x0u32;
     CURSOR_Y -= CURSOR_HEIGHT;
 }
+
+pub unsafe fn restart()
+{
+    paint(0x660000);
+    CURSOR_X = 0x0u32;
+    CURSOR_Y = -CURSOR_HEIGHT;
+}
+
 pub unsafe fn draw_char(c: char)
 {
     while CURSOR_X+(SCREEN_WIDTH*CURSOR_Y) >= SCREEN_WIDTH*SCREEN_HEIGHT
