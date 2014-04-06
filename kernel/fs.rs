@@ -3,34 +3,55 @@ use core::*;
 use core::str::*;
 use core::option::{Some, Option, None}; // Match statement
 use core::iter::Iterator;
-use kernel::vec::Vec;
+//use kernel::vec::Vec;
 use super::super::platform::*;
+use kernel::sgash;
 
 pub struct node {
-    name: cstr,
-    parent: *node,
-    contents: cstr,
+    name: sgash::cstr,
+    parent: Option<*node>,
+    contents: sgash::cstr,
     isDir: bool,
-    children: *Vec<node>,
+    dchildren: Option<*mut node>,
+    fchildren : Option<*mut FileNode>,
 }
  
 impl node {
-    pub unsafe fn new(file_name: cstr, dad: *node, words: cstr, dir: bool) -> node {
+    pub unsafe fn new(file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr, dir: bool) -> node {
         let this = node {
             name: file_name,
             parent: dad,
             contents: words,
             isDir: dir,
-            children: &Vec::new() as *Vec<node>,
+            dchildren: None,
+            fchildren : None,
         };
         this
     }
  
-    pub unsafe fn add_node(&mut self, d : &mut node) { 
-       (*self.children).push(*d);
-    }
+    // pub unsafe fn add_node(&mut self, d : &mut node) { 
+    //    (*self.children).push(*d);
+    // }
 }
  
+pub struct FileNode {
+    name: sgash::cstr,
+    parent: Option<*node>,
+    contents: sgash::cstr,
+    next: Option<*mut FileNode>,
+}
+
+impl FileNode {
+    pub unsafe fn new (file_name: sgash::cstr, dad: Option<*node>, words: sgash::cstr) -> FileNode {
+        let this = FileNode {
+            name: file_name,
+            parent: dad,
+            contents: words,
+            next : None,
+        };
+        this
+    }
+}
 
 // cat <file>
 // pub fn read_file(file){}

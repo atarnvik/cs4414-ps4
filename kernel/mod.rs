@@ -1,18 +1,24 @@
 #[allow(unused_imports)];
 
+extern mod core;
+
 use core::option::{Option, Some, None};
 use core::fail::out_of_memory;
 
 use platform::{cpu, io, drivers};
 use cpu::interrupt;
-
+//use sgash::cstr;
 use self::memory::Allocator;
+
+//pub use self::fs::node;
 
 pub mod ptr;
 pub mod memory;
 pub mod sgash;
 pub mod fs;
-pub mod vec;
+//pub mod vec;
+//pub mod heap;
+//pub mod cstr;
 
 #[cfg(target_word_size = "32")]
 pub mod rt;

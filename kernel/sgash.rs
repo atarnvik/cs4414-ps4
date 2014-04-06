@@ -13,7 +13,7 @@ use kernel::memory::Bitv;
 use kernel::memory::BitvStorage;
 use kernel::memory::Alloc;
 use kernel::memory;
-use kernel::fs::*;
+use kernel::fs;
 
 pub static mut buffer: cstr = cstr {
 	p: 0 as *mut u8,
@@ -267,9 +267,9 @@ pub unsafe fn init() {
 
 	//drawstr(&"\nsgash> ");
 
-
-    let mut mainFile : cstr = cstr::new(256);
-    mainFile = from_str("Hello");
+    let mainFile = from_str("Hello");
+    putcstr(mainFile);
+    putstr(&"\n");
     let mut mfContents : cstr = cstr::new(256);
     mfContents = from_str("I'm inside the system!!!");
 
@@ -282,7 +282,11 @@ pub unsafe fn init() {
     //     }
     //     None => { }
     // }
-    let matt = node::new(mainFile, None, mfContents, false);
+    let matt = fs::node::new(mainFile, None, mfContents, false);
+    putcstr(matt.name);
+    putstr(&"\n");
+    putcstr(matt.contents);
+    putstr(&"\n");
     // root = TreeNode::new(mainFile.p as u8, 1 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8, 0 as u8);
     //drawchar(*(root.start) as char);
 	buffer.reset();
@@ -416,7 +420,7 @@ impl TreeNode {
     }
 }
 
-struct cstr {
+pub struct cstr {
     p: *mut u8,
     p_cstr_i: uint,
     max: uint 
