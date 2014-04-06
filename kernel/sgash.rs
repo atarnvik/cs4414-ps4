@@ -61,7 +61,7 @@ pub fn putchar(key: char) {
     }
 }
 
-fn putstr(msg: &str) {
+pub fn putstr(msg: &str) {
     for c in slice::iter(as_bytes(msg)) {
 	   putchar(*c as char);
     }	
@@ -259,9 +259,6 @@ pub unsafe fn init() {
     screen();
    	putstr(&"\nsgash> ");
 
-    let mainFile = from_str("Hello");
-    let mfContents = from_str("I'm inside the system!!!");
-
     root = fs::DirNode::new(from_str("Root"), '\0' as *mut DirNode);
     putcstr(root.name);
     putstr(&"\n");
@@ -269,17 +266,35 @@ pub unsafe fn init() {
     pwd = &mut root as *mut DirNode;
     putstr(&"PWD: ");
     putcstr((*pwd).name);
-    (*pwd).name = from_str("hello3");
+    //(*pwd).name = from_str("Root");
     putstr(&"\nRoot: ");
     putcstr(root.name);
     putstr(&"\nPWD: ");
     putcstr((*pwd).name);
     putstr(&"\n");
 
-    //let file = fs::FileNode::new(mainFile, mfContents);
-    //putcstr(file.name);
-    //putstr(&"\n");
-    // putcstr(file.read_file());
+    let file = fs::FileNode::new(from_str("file1"), pwd, from_str("This is the first line of file1."));
+    putcstr(file.read_file());
+    putstr(&"\n");
+    (*pwd).write_file(from_str("file2"), from_str("This is the first line of file2."));
+
+    let bloom = from_str("Root");
+    let bang = from_str("Root");
+    match bang.equals_cstr(bloom){
+        false => {putstr(&"\nFUCK");}
+        true => {putstr(&"\nBOOYAH");}
+    }
+
+    putstr(&"\n");
+    putcstr((*pwd).name);
+    putstr(&"\n");
+    putcstr(bloom);
+    putstr(&"\n");
+
+    match (*pwd).name.equals_cstr(bloom){
+        false => {putstr(&"\nFUCK");}
+        true => {putstr(&"\nBOOYAH");}
+    }
 
 	buffer.reset();
 }
@@ -349,7 +364,6 @@ pub struct cstr {
 impl cstr {
 
     pub unsafe fn new(size: uint) -> cstr {
-        // Sometimes this doesn't allocate enough memory and gets stuck..
         let (x,y) = heap.alloc(size);
 
         let temp = ((x as uint) + 256 * count) as *mut u8;
@@ -365,18 +379,18 @@ impl cstr {
         this
     }
 
-    unsafe fn add_char(&mut self, x: u8) -> bool{
-        //putstr("1");
+    fn len(&self) -> uint { 
+        self.p_cstr_i
+    }
+
+    pub unsafe fn add_char(&mut self, x: u8) -> bool{
         if (self.p_cstr_i == self.max) { 
             putstr("not able to add");
             return false; 
         }
-        //putstr("2");
         *(((self.p as uint)+self.p_cstr_i) as *mut u8) = x;
-        //putstr("3");
         self.p_cstr_i += 1;
         *(((self.p as uint)+self.p_cstr_i) as *mut char) = '\0';
-        //putstr("4");
         true
     }
 
@@ -397,7 +411,6 @@ impl cstr {
     }
 
     unsafe fn equals(&self, other: &str) -> bool {
-
     	// save val of self.p, which is u8, as a unit
     	let mut selfp: uint = self.p as uint;
     	// iterate through the str "other"
@@ -412,9 +425,21 @@ impl cstr {
     	//*(selfp as *char) == '\0'
     }
 
-    // unsafe fn equals(&self, other: cstr) -> bool {
-    //     if(self. )
-    // }
+    unsafe fn equals_cstr(&self, other: cstr) -> bool {
+        let mut x: uint = 0;
+        let mut selfp: uint = self.p as uint;
+        let mut otherp: uint = other.p as uint;
+        while x < self.len() {
+            if (*(selfp as *char) != *(otherp as *char)) { 
+                putstr(&"\nDifferent chars");
+               return false;
+            }
+            selfp += 1;
+            otherp += 1;
+            x += 1;
+        }
+        true
+    }
 
 	unsafe fn getarg(&self, delim: char, mut k: uint) -> Option<cstr> {
 		let mut ind: uint = 0;

@@ -6,6 +6,7 @@ use core::iter::Iterator;
 use kernel::vec::Vec;
 use super::super::platform::*;
 use kernel::sgash;
+use core::iter::Iterator;
 
 pub struct DirNode {
     name: sgash::cstr,
@@ -20,27 +21,39 @@ impl DirNode {
             name: file_name,
             parent: dad,
 
-            dchildren: &mut Vec::new(),
-            fchildren : &mut Vec::new(),
+            dchildren: &mut Vec::new() as *mut Vec<*mut DirNode>,
+            fchildren : &mut Vec::new() as *mut Vec<*mut FileNode>,
         };
         this
     }
 
-    // pub unsafe fn list_directory (&mut self, dir : sgash::cstr) {
-    //     if(dir.equals(self.name)) {
+    pub unsafe fn list_directory (&mut self) -> Vec<sgash::cstr>{
+        let mut ls = &mut Vec::new() as *mut Vec<*mut sgash::cstr>;
+        for d in iter((*self.dchildren).as_mut_slice()){
+        	ls.push(d);
+        }
 
-    //     }
-    // }
+    }
  
-    pub unsafe fn add_dir(&mut self, d : sgash::cstr) {
+    pub unsafe fn create_directory(&mut self, d : sgash::cstr) {
         let newNode : *mut DirNode = &mut DirNode::new(d, self); 
        (*self.dchildren).push(newNode);
     }
 
-    pub unsafe fn add_file(&mut self, d : sgash::cstr, contents : sgash::cstr) {
+    pub unsafe fn create_file(&mut self, d : sgash::cstr) {
+    	let empty = sgash::cstr::new(0);
+        let newNode : *mut FileNode = &mut FileNode::new(d, self, empty); 
+       (*self.fchildren).push(newNode);
+    }
+
+    pub unsafe fn write_file(&mut self, d : sgash::cstr, contents : sgash::cstr) {
         let newNode : *mut FileNode = &mut FileNode::new(d, self, contents); 
        (*self.fchildren).push(newNode);
     }
+
+    // pub unsafe fn get_file(&mut self, name : sgash::cstr){
+
+    // }
 }
  
 pub struct FileNode {
@@ -67,17 +80,7 @@ impl FileNode {
     pub fn read_file(&self) -> sgash::cstr {
         self.contents
     }
-
-    // wr
-    pub fn write_file(&self, string : sgash::cstr) {
-
-    }
 }
-
-
-
-// // touch
-// pub fn create_file(directory, name){}
 
 // // rm
 // pub fn delete_file(directory, name){}
