@@ -155,8 +155,7 @@ unsafe fn parse(){
                 drawstr(&"\n");
                 match buffer.getarg(' ', 1){
                     Some(b) =>{
-                        putcstr(b);
-                        drawcstr(b);
+                        (*pwd).read_file(b);
                     }
                     None => {}
                 };
@@ -181,8 +180,10 @@ unsafe fn parse(){
 				};
 			}
             if(a.equals(&"pwd")) {
-                putstr(&"\nmy directory");
-                drawstr(&"\nmy directory");
+                // putcstr((*pwd).name);
+                // drawcstr((*pwd).name);
+                putstr(&"\nYou are here");
+                drawstr(&"\nYou are here");
             }
             if(a.equals(&"wr")) {
                 putstr(&"\nwrite file");
@@ -260,41 +261,8 @@ pub unsafe fn init() {
    	putstr(&"\nsgash> ");
 
     root = fs::DirNode::new(from_str("Root"), '\0' as *mut DirNode);
-    putcstr(root.name);
-    putstr(&"\n");
-
     pwd = &mut root as *mut DirNode;
-    putstr(&"PWD: ");
-    putcstr((*pwd).name);
-    //(*pwd).name = from_str("Root");
-    putstr(&"\nRoot: ");
-    putcstr(root.name);
-    putstr(&"\nPWD: ");
-    putcstr((*pwd).name);
-    putstr(&"\n");
-
-    let file = fs::FileNode::new(from_str("file1"), pwd, from_str("This is the first line of file1."));
-    putcstr(file.read_file());
-    putstr(&"\n");
-    (*pwd).write_file(from_str("file2"), from_str("This is the first line of file2."));
-
-    let bloom = from_str("Root");
-    let bang = from_str("Root");
-    match bang.equals_cstr(bloom){
-        false => {putstr(&"\nFUCK");}
-        true => {putstr(&"\nBOOYAH");}
-    }
-
-    putstr(&"\n");
-    putcstr((*pwd).name);
-    putstr(&"\n");
-    putcstr(bloom);
-    putstr(&"\n");
-
-    match (*pwd).name.equals_cstr(bloom){
-        false => {putstr(&"\nFUCK");}
-        true => {putstr(&"\nBOOYAH");}
-    }
+    (*pwd).name = from_str("Root");
 
 	buffer.reset();
 }
@@ -322,7 +290,7 @@ pub unsafe fn drawcstr(string : cstr) -> bool{
             return true;
         }
     }
-    return false;
+    false
 }
 
 pub unsafe fn echo() -> bool{
@@ -344,7 +312,7 @@ pub unsafe fn echo() -> bool{
             return true;
         }
     }
-    return false;
+    false
 }
 
 pub unsafe fn from_str(s: &str) -> cstr {
@@ -421,17 +389,15 @@ impl cstr {
             }
     		selfp += 1;
     	};
-    	return true;
-    	//*(selfp as *char) == '\0'
+    	true
     }
 
-    unsafe fn equals_cstr(&self, other: cstr) -> bool {
+    pub unsafe fn equals_cstr(&self, other: cstr) -> bool {
         let mut x: uint = 0;
         let mut selfp: uint = self.p as uint;
         let mut otherp: uint = other.p as uint;
         while x < self.len() {
             if (*(selfp as *char) != *(otherp as *char)) { 
-                putstr(&"\nDifferent chars");
                return false;
             }
             selfp += 1;

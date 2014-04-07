@@ -30,17 +30,39 @@ impl DirNode {
         this
     }
 
-    pub unsafe fn list_directory (&mut self){
-        for d in iter((self.dchildren).as_mut_slice()){
-        	putcstr(d.name);
-        	drawcstr(d.name);
+	pub unsafe fn list_directory (&mut self){
+        for d in iter((*self.dchildren).as_slice()) {
+        	putcstr((**d).name);
+        	drawcstr((**d).name);
         }
+        for f in iter((*self.fchildren).as_slice()) {
+        	putcstr((**f).name);
+        	drawcstr((**f).name);
+        }
+    }
 
+    pub unsafe fn get_directory(&mut self, d : cstr) -> Option<DirNode>{
+        for f in iter((*self.dchildren).as_slice()) { 
+        	if((**f).name.equals_cstr(d)){
+       			return Some(**f);
+       		}
+       	}
+      	None
     }
  
     pub unsafe fn create_directory(&mut self, d : cstr) {
         let newNode : *mut DirNode = &mut DirNode::new(d, self); 
        (*self.dchildren).push(newNode);
+    }
+
+    pub unsafe fn delete_directory(&mut self, have_mercy : cstr) {
+        let temp = &mut Vec::new() as *mut Vec<*mut DirNode>;
+        for d in iter((*self.dchildren).as_slice()) { 
+        	if(!(**d).name.equals_cstr(have_mercy)){
+       			(*temp).push(*d);
+       		}
+       	}
+      	self.dchildren = temp;
     }
 
     pub unsafe fn create_file(&mut self, d : cstr) {
@@ -49,14 +71,29 @@ impl DirNode {
        (*self.fchildren).push(newNode);
     }
 
+    pub unsafe fn delete_file(&mut self, have_mercy : cstr) {
+        let temp = &mut Vec::new() as *mut Vec<*mut DirNode>;
+        for f in iter((*self.dchildren).as_slice()) { 
+        	if(!(**f).name.equals_cstr(have_mercy)){
+       			(*temp).push(*f);
+       		}
+       	}
+      	self.dchildren = temp;
+    }
+
     pub unsafe fn write_file(&mut self, d : cstr, contents : cstr) {
         let newNode : *mut FileNode = &mut FileNode::new(d, self, contents); 
        (*self.fchildren).push(newNode);
+    } 
+
+    pub unsafe fn read_file(&self, file: cstr){ 
+    	for f in iter((*self.fchildren).as_slice()) {
+    		if((**f).name.equals_cstr(file)){
+	        	(**f).read_contents();
+	        	break;
+	        }
+        }
     }
-
-    // pub unsafe fn get_file(&mut self, name : cstr){
-
-    // }
 }
  
 pub struct FileNode {
@@ -79,28 +116,10 @@ impl FileNode {
         self.name
     }
 
-    //cat <file>
-    pub fn read_file(&self) -> cstr {
-        self.contents
+    pub unsafe fn read_contents(&self) {
+    	putcstr(self.contents);
+	    drawcstr(self.contents);
     }
 }
-
-// // rm
-// pub fn delete_file(directory, name){}
-
-// // ???
-// pub fn get_file(directory, name){}
-
-// // ls
-// pub fn list_directory(directory){}
-
-// // mkdir
-// pub fn create_directory(parent, name){}
-
-// // rm
-// pub fn delete_directory(directory){}
-
-// // pwd
-// pub fn get_directory(parent, name){}
 
 
